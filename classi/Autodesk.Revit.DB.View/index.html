@@ -1,0 +1,1146 @@
+
+<!doctype html>
+<html lang="it" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="La documentazione della Revit API, decifrata in Python. Riferimento gratuito e open source.">
+      
+      
+      
+        <link rel="canonical" href="https://dynatools.github.io/Revit-API-Illustrata-Public/classi/Autodesk.Revit.DB.View/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>View - Revit API in Python</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="red">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#view" class="md-skip">
+          Vai al contenuto
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Intestazione">
+    <a href="../.." title="Revit API in Python" class="md-header__button md-logo" aria-label="Revit API in Python" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Revit API in Python
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              View
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="red"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Cerca" placeholder="Cerca" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Cerca">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Cancella" aria-label="Cancella" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inizializza la ricerca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DynaTools/Revit-API-Illustrata-Public" title="Apri repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaTools/Revit-API-Illustrata-Public
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigazione" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Revit API in Python" class="md-nav__button md-logo" aria-label="Revit API in Python" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Revit API in Python
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DynaTools/Revit-API-Illustrata-Public" title="Apri repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DynaTools/Revit-API-Illustrata-Public
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Indice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Indice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#la-classe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        La classe
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#la-corrispondenza" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        La corrispondenza
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#il-tranello" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Il tranello
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lo-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lo script
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="view">View</h1>
+<div class="admonition note">
+<p class="admonition-title">Scheda automatica</p>
+<p>La corrispondenza C#→Python è generata dalle 7 Regole. Descrizione, tranello ed esempio sono <strong>da rivedere</strong> — <a href="https://github.com/DynaTools/Revit-API-Illustrata-Public">contribuisci</a>.</p>
+</div>
+<h2 id="la-classe">La classe</h2>
+<p><em>(una frase: cos'è e a cosa serve)</em></p>
+<h2 id="la-corrispondenza">La corrispondenza</h2>
+<table>
+<thead>
+<tr>
+<th>nella doc (C#)</th>
+<th>in python</th>
+<th>tipo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ElementId AnalysisDisplayStyleId { get; set; }</code></td>
+<td><code>view.AnalysisDisplayStyleId</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>Boolean AreAnalyticalModelCategoriesHidden { get; set; }</code></td>
+<td><code>view.AreAnalyticalModelCategoriesHidden</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean AreAnnotationCategoriesHidden { get; set; }</code></td>
+<td><code>view.AreAnnotationCategoriesHidden</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean AreCoordinationModelHandlesHidden { get; set; }</code></td>
+<td><code>view.AreCoordinationModelHandlesHidden</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean AreImportCategoriesHidden { get; set; }</code></td>
+<td><code>view.AreImportCategoriesHidden</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean AreModelCategoriesHidden { get; set; }</code></td>
+<td><code>view.AreModelCategoriesHidden</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean ArePointCloudsHidden { get; set; }</code></td>
+<td><code>view.ArePointCloudsHidden</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>ElementId AssociatedAssemblyInstanceId { get; }</code></td>
+<td><code>view.AssociatedAssemblyInstanceId</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>Boolean CanBePrinted { get; }</code></td>
+<td><code>view.CanBePrinted</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>BoundingBoxXYZ CropBox { get; set; }</code></td>
+<td><code>view.CropBox</code></td>
+<td>BoundingBoxXYZ</td>
+</tr>
+<tr>
+<td><code>Boolean CropBoxActive { get; set; }</code></td>
+<td><code>view.CropBoxActive</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CropBoxVisible { get; set; }</code></td>
+<td><code>view.CropBoxVisible</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>ViewDetailLevel DetailLevel { get; set; }</code></td>
+<td><code>view.DetailLevel</code></td>
+<td>ViewDetailLevel</td>
+</tr>
+<tr>
+<td><code>ViewDiscipline Discipline { get; set; }</code></td>
+<td><code>view.Discipline</code></td>
+<td>ViewDiscipline</td>
+</tr>
+<tr>
+<td><code>DisplayStyle DisplayStyle { get; set; }</code></td>
+<td><code>view.DisplayStyle</code></td>
+<td>DisplayStyle</td>
+</tr>
+<tr>
+<td><code>Level GenLevel { get; }</code></td>
+<td><code>view.GenLevel</code></td>
+<td>Level</td>
+</tr>
+<tr>
+<td><code>Boolean IsAssemblyView { get; }</code></td>
+<td><code>view.IsAssemblyView</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsCallout { get; }</code></td>
+<td><code>view.IsCallout</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsTemplate { get; }</code></td>
+<td><code>view.IsTemplate</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>XYZ Origin { get; }</code></td>
+<td><code>view.Origin</code></td>
+<td>XYZ</td>
+</tr>
+<tr>
+<td><code>BoundingBoxUV Outline { get; }</code></td>
+<td><code>view.Outline</code></td>
+<td>BoundingBoxUV</td>
+</tr>
+<tr>
+<td><code>PartsVisibility PartsVisibility { get; set; }</code></td>
+<td><code>view.PartsVisibility</code></td>
+<td>PartsVisibility</td>
+</tr>
+<tr>
+<td><code>Boolean RevealConstraintsMode { get; set; }</code></td>
+<td><code>view.RevealConstraintsMode</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>XYZ RightDirection { get; }</code></td>
+<td><code>view.RightDirection</code></td>
+<td>XYZ</td>
+</tr>
+<tr>
+<td><code>Int32 Scale { get; set; }</code></td>
+<td><code>view.Scale</code></td>
+<td>Int32</td>
+</tr>
+<tr>
+<td><code>Int32 ShadowIntensity { get; set; }</code></td>
+<td><code>view.ShadowIntensity</code></td>
+<td>Int32</td>
+</tr>
+<tr>
+<td><code>SketchPlane SketchPlane { get; set; }</code></td>
+<td><code>view.SketchPlane</code></td>
+<td>SketchPlane</td>
+</tr>
+<tr>
+<td><code>SunAndShadowSettings SunAndShadowSettings { get; }</code></td>
+<td><code>view.SunAndShadowSettings</code></td>
+<td>SunAndShadowSettings</td>
+</tr>
+<tr>
+<td><code>Int32 SunlightIntensity { get; set; }</code></td>
+<td><code>view.SunlightIntensity</code></td>
+<td>Int32</td>
+</tr>
+<tr>
+<td><code>TemporaryViewModes TemporaryViewModes { get; }</code></td>
+<td><code>view.TemporaryViewModes</code></td>
+<td>TemporaryViewModes</td>
+</tr>
+<tr>
+<td><code>String Title { get; }</code></td>
+<td><code>view.Title</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>XYZ UpDirection { get; }</code></td>
+<td><code>view.UpDirection</code></td>
+<td>XYZ</td>
+</tr>
+<tr>
+<td><code>XYZ ViewDirection { get; }</code></td>
+<td><code>view.ViewDirection</code></td>
+<td>XYZ</td>
+</tr>
+<tr>
+<td><code>ElementId ViewTemplateId { get; set; }</code></td>
+<td><code>view.ViewTemplateId</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>ViewType ViewType { get; }</code></td>
+<td><code>view.ViewType</code></td>
+<td>ViewType</td>
+</tr>
+<tr>
+<td><code>Void AddFilter(ElementId)</code></td>
+<td><code>view.AddFilter(filterElementId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Boolean AllowsAnalysisDisplay()</code></td>
+<td><code>view.AllowsAnalysisDisplay()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Void ApplyViewTemplateParameters(View)</code></td>
+<td><code>view.ApplyViewTemplateParameters(otherView)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Boolean AreGraphicsOverridesAllowed()</code></td>
+<td><code>view.AreGraphicsOverridesAllowed()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanApplyColorFillScheme(ElementId, ElementId)</code></td>
+<td><code>view.CanApplyColorFillScheme(categoryId, schemeId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanCategoryBeHidden(ElementId)</code></td>
+<td><code>view.CanCategoryBeHidden(elementId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanCategoryBeHiddenTemporary(ElementId)</code></td>
+<td><code>view.CanCategoryBeHiddenTemporary(elementId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanEnableTemporaryViewPropertiesMode()</code></td>
+<td><code>view.CanEnableTemporaryViewPropertiesMode()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanModifyDetailLevel()</code></td>
+<td><code>view.CanModifyDetailLevel()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanModifyDisplayStyle()</code></td>
+<td><code>view.CanModifyDisplayStyle()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanModifyViewDiscipline()</code></td>
+<td><code>view.CanModifyViewDiscipline()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanUseDepthCueing()</code></td>
+<td><code>view.CanUseDepthCueing()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanUseTemporaryVisibilityModes()</code></td>
+<td><code>view.CanUseTemporaryVisibilityModes()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean CanViewBeDuplicated(ViewDuplicateOption)</code></td>
+<td><code>view.CanViewBeDuplicated(duplicateOption)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Void ConvertTemporaryHideIsolateToPermanent()</code></td>
+<td><code>view.ConvertTemporaryHideIsolateToPermanent()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void ConvertToIndependent()</code></td>
+<td><code>view.ConvertToIndependent()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>View CreateViewTemplate()</code></td>
+<td><code>view.CreateViewTemplate()</code></td>
+<td>View</td>
+</tr>
+<tr>
+<td><code>Void DisableTemporaryViewMode(TemporaryViewMode)</code></td>
+<td><code>view.DisableTemporaryViewMode(mode)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>ElementId Duplicate(ViewDuplicateOption)</code></td>
+<td><code>view.Duplicate(duplicateOption)</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>Void EnableRevealHiddenMode()</code></td>
+<td><code>view.EnableRevealHiddenMode()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Boolean EnableTemporaryViewPropertiesMode(ElementId)</code></td>
+<td><code>view.EnableTemporaryViewPropertiesMode(viewTemplateId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>ViewDisplayBackground GetBackground()</code></td>
+<td><code>view.GetBackground()</code></td>
+<td>ViewDisplayBackground</td>
+</tr>
+<tr>
+<td><code>ElementId GetCalloutParentId()</code></td>
+<td><code>view.GetCalloutParentId()</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>Boolean GetCategoryHidden(ElementId)</code></td>
+<td><code>view.GetCategoryHidden(categoryId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>OverrideGraphicSettings GetCategoryOverrides(ElementId)</code></td>
+<td><code>view.GetCategoryOverrides(categoryId)</code></td>
+<td>OverrideGraphicSettings</td>
+</tr>
+<tr>
+<td><code>ElementId GetColorFillSchemeId(ElementId)</code></td>
+<td><code>view.GetColorFillSchemeId(categoryId)</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>ViewCropRegionShapeManager GetCropRegionShapeManager()</code></td>
+<td><code>view.GetCropRegionShapeManager()</code></td>
+<td>ViewCropRegionShapeManager</td>
+</tr>
+<tr>
+<td><code>ViewCropRegionShapeManager GetCropRegionShapeManagerForReferenceCallout(Document, ElementId)</code></td>
+<td><code>View.GetCropRegionShapeManagerForReferenceCallout(doc, callout)</code></td>
+<td>ViewCropRegionShapeManager</td>
+</tr>
+<tr>
+<td><code>ICollection&lt;ElementId&gt; GetDependentViewIds()</code></td>
+<td><code>view.GetDependentViewIds()</code></td>
+<td>ICollection<ElementId></td>
+</tr>
+<tr>
+<td><code>ViewDisplayDepthCueing GetDepthCueing()</code></td>
+<td><code>view.GetDepthCueing()</code></td>
+<td>ViewDisplayDepthCueing</td>
+</tr>
+<tr>
+<td><code>DirectContext3DHandleOverrides GetDirectContext3DHandleOverrides()</code></td>
+<td><code>view.GetDirectContext3DHandleOverrides()</code></td>
+<td>DirectContext3DHandleOverrides</td>
+</tr>
+<tr>
+<td><code>OverrideGraphicSettings GetElementOverrides(ElementId)</code></td>
+<td><code>view.GetElementOverrides(elementId)</code></td>
+<td>OverrideGraphicSettings</td>
+</tr>
+<tr>
+<td><code>OverrideGraphicSettings GetFilterOverrides(ElementId)</code></td>
+<td><code>view.GetFilterOverrides(filterElementId)</code></td>
+<td>OverrideGraphicSettings</td>
+</tr>
+<tr>
+<td><code>ICollection&lt;ElementId&gt; GetFilters()</code></td>
+<td><code>view.GetFilters()</code></td>
+<td>ICollection<ElementId></td>
+</tr>
+<tr>
+<td><code>Boolean GetFilterVisibility(ElementId)</code></td>
+<td><code>view.GetFilterVisibility(filterElementId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean GetIsFilterEnabled(ElementId)</code></td>
+<td><code>view.GetIsFilterEnabled(filterElementId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>RevitLinkGraphicsSettings GetLinkOverrides(ElementId)</code></td>
+<td><code>view.GetLinkOverrides(linkId)</code></td>
+<td>RevitLinkGraphicsSettings</td>
+</tr>
+<tr>
+<td><code>IList&lt;TransformWithBoundary&gt; GetModelToProjectionTransforms()</code></td>
+<td><code>view.GetModelToProjectionTransforms()</code></td>
+<td>IList<TransformWithBoundary></td>
+</tr>
+<tr>
+<td><code>ICollection&lt;ElementId&gt; GetNonControlledTemplateParameterIds()</code></td>
+<td><code>view.GetNonControlledTemplateParameterIds()</code></td>
+<td>ICollection<ElementId></td>
+</tr>
+<tr>
+<td><code>IList&lt;ElementId&gt; GetOrderedFilters()</code></td>
+<td><code>view.GetOrderedFilters()</code></td>
+<td>IList<ElementId></td>
+</tr>
+<tr>
+<td><code>ViewPlacementOnSheetStatus GetPlacementOnSheetStatus()</code></td>
+<td><code>view.GetPlacementOnSheetStatus()</code></td>
+<td>ViewPlacementOnSheetStatus</td>
+</tr>
+<tr>
+<td><code>PointCloudOverrides GetPointCloudOverrides()</code></td>
+<td><code>view.GetPointCloudOverrides()</code></td>
+<td>PointCloudOverrides</td>
+</tr>
+<tr>
+<td><code>ElementId GetPrimaryViewId()</code></td>
+<td><code>view.GetPrimaryViewId()</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>ICollection&lt;ElementId&gt; GetReferenceCallouts()</code></td>
+<td><code>view.GetReferenceCallouts()</code></td>
+<td>ICollection<ElementId></td>
+</tr>
+<tr>
+<td><code>ICollection&lt;ElementId&gt; GetReferenceElevations()</code></td>
+<td><code>view.GetReferenceElevations()</code></td>
+<td>ICollection<ElementId></td>
+</tr>
+<tr>
+<td><code>ICollection&lt;ElementId&gt; GetReferenceSections()</code></td>
+<td><code>view.GetReferenceSections()</code></td>
+<td>ICollection<ElementId></td>
+</tr>
+<tr>
+<td><code>ViewDisplaySketchyLines GetSketchyLines()</code></td>
+<td><code>view.GetSketchyLines()</code></td>
+<td>ViewDisplaySketchyLines</td>
+</tr>
+<tr>
+<td><code>IList&lt;ElementId&gt; GetTemplateParameterIds()</code></td>
+<td><code>view.GetTemplateParameterIds()</code></td>
+<td>IList<ElementId></td>
+</tr>
+<tr>
+<td><code>ElementId GetTemporaryViewPropertiesId()</code></td>
+<td><code>view.GetTemporaryViewPropertiesId()</code></td>
+<td>ElementId</td>
+</tr>
+<tr>
+<td><code>String GetTemporaryViewPropertiesName()</code></td>
+<td><code>view.GetTemporaryViewPropertiesName()</code></td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>ViewDisplayModel GetViewDisplayModel()</code></td>
+<td><code>view.GetViewDisplayModel()</code></td>
+<td>ViewDisplayModel</td>
+</tr>
+<tr>
+<td><code>WorksetVisibility GetWorksetVisibility(WorksetId)</code></td>
+<td><code>view.GetWorksetVisibility(worksetId)</code></td>
+<td>WorksetVisibility</td>
+</tr>
+<tr>
+<td><code>WorksharingDisplayMode GetWorksharingDisplayMode()</code></td>
+<td><code>view.GetWorksharingDisplayMode()</code></td>
+<td>WorksharingDisplayMode</td>
+</tr>
+<tr>
+<td><code>Boolean HasDetailLevel()</code></td>
+<td><code>view.HasDetailLevel()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean HasDisplayStyle()</code></td>
+<td><code>view.HasDisplayStyle()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean HasViewDiscipline()</code></td>
+<td><code>view.HasViewDiscipline()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean HasViewTransforms()</code></td>
+<td><code>view.HasViewTransforms()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Void HideActiveWorkPlane()</code></td>
+<td><code>view.HideActiveWorkPlane()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void HideCategoriesTemporary(ICollection&lt;ElementId&gt;)</code></td>
+<td><code>view.HideCategoriesTemporary(elementIds)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void HideCategoryTemporary(ElementId)</code></td>
+<td><code>view.HideCategoryTemporary(elementId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void HideElements(ICollection&lt;ElementId&gt;)</code></td>
+<td><code>view.HideElements(elementIdSet)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void HideElementsTemporary(ICollection&lt;ElementId&gt;)</code></td>
+<td><code>view.HideElementsTemporary(elementIdSet)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void HideElementTemporary(ElementId)</code></td>
+<td><code>view.HideElementTemporary(elementId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Boolean IsCategoryOverridable(ElementId)</code></td>
+<td><code>view.IsCategoryOverridable(categoryId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsElementVisibleInTemporaryViewMode(TemporaryViewMode, ElementId)</code></td>
+<td><code>view.IsElementVisibleInTemporaryViewMode(mode, id)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsFilterApplied(ElementId)</code></td>
+<td><code>view.IsFilterApplied(filterElementId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsInTemporaryViewMode(TemporaryViewMode)</code></td>
+<td><code>view.IsInTemporaryViewMode(mode)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Void IsolateCategoriesTemporary(ICollection&lt;ElementId&gt;)</code></td>
+<td><code>view.IsolateCategoriesTemporary(elementIds)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void IsolateCategoryTemporary(ElementId)</code></td>
+<td><code>view.IsolateCategoryTemporary(elementId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void IsolateElementsTemporary(ICollection&lt;ElementId&gt;)</code></td>
+<td><code>view.IsolateElementsTemporary(elementIds)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void IsolateElementTemporary(ElementId)</code></td>
+<td><code>view.IsolateElementTemporary(elementId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Boolean IsTemporaryHideIsolateActive()</code></td>
+<td><code>view.IsTemporaryHideIsolateActive()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsTemporaryViewPropertiesModeEnabled()</code></td>
+<td><code>view.IsTemporaryViewPropertiesModeEnabled()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsValidViewScale(Int32)</code></td>
+<td><code>View.IsValidViewScale(viewScale)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsValidViewTemplate(ElementId)</code></td>
+<td><code>view.IsValidViewTemplate(templateId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsViewValidForTemplateCreation()</code></td>
+<td><code>view.IsViewValidForTemplateCreation()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean IsWorksetVisible(WorksetId)</code></td>
+<td><code>view.IsWorksetVisible(worksetId)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Void Print(View)</code></td>
+<td><code>view.Print(viewTemplate)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void Print()</code></td>
+<td><code>view.Print()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void Print(View, Boolean)</code></td>
+<td><code>view.Print(viewTemplate, useCurrentPrintSettings)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void Print(Boolean)</code></td>
+<td><code>view.Print(useCurrentPrintSettings)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void RemoveCalloutParent()</code></td>
+<td><code>view.RemoveCalloutParent()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void RemoveFilter(ElementId)</code></td>
+<td><code>view.RemoveFilter(filterElementId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void RemoveLinkOverrides(ElementId)</code></td>
+<td><code>view.RemoveLinkOverrides(linkId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void RestoreCalloutParent()</code></td>
+<td><code>view.RestoreCalloutParent()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetBackground(ViewDisplayBackground)</code></td>
+<td><code>view.SetBackground(background)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetCategoryHidden(ElementId, Boolean)</code></td>
+<td><code>view.SetCategoryHidden(categoryId, hide)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetCategoryOverrides(ElementId, OverrideGraphicSettings)</code></td>
+<td><code>view.SetCategoryOverrides(categoryId, overrideGraphicSettings)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetColorFillSchemeId(ElementId, ElementId)</code></td>
+<td><code>view.SetColorFillSchemeId(categoryId, schemeId)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetDepthCueing(ViewDisplayDepthCueing)</code></td>
+<td><code>view.SetDepthCueing(depthCueing)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetElementOverrides(ElementId, OverrideGraphicSettings)</code></td>
+<td><code>view.SetElementOverrides(elementId, overrideGraphicSettings)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetFilterOverrides(ElementId, OverrideGraphicSettings)</code></td>
+<td><code>view.SetFilterOverrides(filterElementId, overrideGraphicSettings)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetFilterVisibility(ElementId, Boolean)</code></td>
+<td><code>view.SetFilterVisibility(filterElementId, visibility)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetIsFilterEnabled(ElementId, Boolean)</code></td>
+<td><code>view.SetIsFilterEnabled(filterElementId, enable)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetLinkOverrides(ElementId, RevitLinkGraphicsSettings)</code></td>
+<td><code>view.SetLinkOverrides(linkId, linkDisplaySettings)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetNonControlledTemplateParameterIds(ICollection&lt;ElementId&gt;)</code></td>
+<td><code>view.SetNonControlledTemplateParameterIds(newSet)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetSketchyLines(ViewDisplaySketchyLines)</code></td>
+<td><code>view.SetSketchyLines(sketchyLines)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetViewDisplayModel(ViewDisplayModel)</code></td>
+<td><code>view.SetViewDisplayModel(viewDisplayModel)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetWorksetVisibility(WorksetId, WorksetVisibility)</code></td>
+<td><code>view.SetWorksetVisibility(worksetId, visible)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void SetWorksharingDisplayMode(WorksharingDisplayMode)</code></td>
+<td><code>view.SetWorksharingDisplayMode(displayMode)</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>Void ShowActiveWorkPlane()</code></td>
+<td><code>view.ShowActiveWorkPlane()</code></td>
+<td>Void</td>
+</tr>
+<tr>
+<td><code>ICollection&lt;ElementId&gt; SupportedColorFillCategoryIds()</code></td>
+<td><code>view.SupportedColorFillCategoryIds()</code></td>
+<td>ICollection<ElementId></td>
+</tr>
+<tr>
+<td><code>Boolean SupportsRevealConstraints()</code></td>
+<td><code>view.SupportsRevealConstraints()</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Boolean SupportsWorksharingDisplayMode(WorksharingDisplayMode)</code></td>
+<td><code>view.SupportsWorksharingDisplayMode(mode)</code></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><code>Void UnhideElements(ICollection&lt;ElementId&gt;)</code></td>
+<td><code>view.UnhideElements(elementIdSet)</code></td>
+<td>Void</td>
+</tr>
+</tbody>
+</table>
+<h2 id="il-tranello">Il tranello</h2>
+<p><em>(ciò che la pagina non dice e ti farebbe sbagliare)</em></p>
+<h2 id="lo-script">Lo script</h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># esempio da completare</span>
+</code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Torna su
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["search.suggest", "search.highlight", "content.code.copy", "navigation.top", "navigation.instant"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiato", "clipboard.copy": "Copia", "search.result.more.one": "1 altro in questa pagina", "search.result.more.other": "# altri in questa pagina", "search.result.none": "Nessun documento trovato", "search.result.one": "1 documento trovato", "search.result.other": "# documenti trovati", "search.result.placeholder": "Scrivi per iniziare a cercare", "search.result.term.missing": "Non presente", "select.version": "Seleziona la versione"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
