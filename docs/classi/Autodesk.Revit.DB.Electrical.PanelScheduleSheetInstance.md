@@ -1,0 +1,40 @@
+---
+title: PanelScheduleSheetInstance
+classe: Autodesk.Revit.DB.Electrical.PanelScheduleSheetInstance
+namespace: Autodesk.Revit.DB.Electrical
+eredita: Autodesk.Revit.DB.Element
+revit: "2025"
+revitapi: "25.4.30.0"
+stato: auto
+verbo: leggere
+membri_n: 5
+---
+
+# PanelScheduleSheetInstance
+
+!!! note "Scheda automatica"
+    La corrispondenza C#→Python è generata dalle 7 Regole. Descrizione, tranello ed esempio sono **da rivedere** — [contribuisci](https://github.com/DynaTools/Revit-API-Illustrata-Public).
+
+## La classe
+
+_(una frase: cos'è e a cosa serve)_
+
+## La corrispondenza
+
+| nella doc (C#) | in python | tipo |
+|---|---|---|
+| `XYZ Origin { get; set; }` | `panelScheduleSheetInstance.Origin` | XYZ |
+| `ElementId ScheduleId { get; set; }` | `panelScheduleSheetInstance.ScheduleId` | ElementId |
+| `PanelScheduleSheetInstance Create(Document, ElementId, View)` | `PanelScheduleSheetInstance.Create(ADoc, scheduleId, DBView)` | PanelScheduleSheetInstance |
+| `PanelScheduleView GetSchedule()` | `panelScheduleSheetInstance.GetSchedule()` | PanelScheduleView |
+| `Boolean SplitSegment(Int32)` | `panelScheduleSheetInstance.SplitSegment(iSeg)` | Boolean |
+
+## Il tranello
+
+_(ciò che la pagina non dice e ti farebbe sbagliare)_
+
+## Lo script
+
+```python
+# esempio da completare
+```

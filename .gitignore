@@ -1,0 +1,9 @@
+# build .NET (estrattore)
+bin/
+obj/
+# output MkDocs
+site/
+# vari
+.DS_Store
+Thumbs.db
+*~
