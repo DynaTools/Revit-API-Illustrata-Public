@@ -1,0 +1,40 @@
+site_name: Revit API in Python
+site_description: La documentazione della Revit API, decifrata in Python. Riferimento gratuito e open source.
+site_url: https://dynatools.github.io/Revit-API-Illustrata-Public/
+repo_url: https://github.com/DynaTools/Revit-API-Illustrata-Public
+repo_name: DynaTools/Revit-API-Illustrata-Public
+docs_dir: docs
+
+theme:
+  name: material
+  language: it
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: red
+  features:
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - navigation.top
+    - navigation.instant
+
+plugins:
+  - search:
+      lang: it
+
+markdown_extensions:
+  - admonition
+  - tables
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+validation:
+  nav:
+    omitted_files: ignore
+  links:
+    absolute_links: ignore
+    unrecognized_links: ignore
+
+nav:
+  - Home: index.md
