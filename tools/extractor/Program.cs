@@ -42,7 +42,10 @@ class Program
         {
             if (filter != null && (t.FullName == null || !t.FullName.Contains(filter))) continue;
             try {
-                File.WriteAllText(Path.Combine(outDir, Safe(t.FullName) + ".md"), Render(t, ver, apiver), new UTF8Encoding(false));
+                string ns = string.IsNullOrEmpty(t.Namespace) ? "_global" : Safe(t.Namespace);
+                string dir = Path.Combine(outDir, ns);
+                Directory.CreateDirectory(dir);
+                File.WriteAllText(Path.Combine(dir, Safe(t.Name) + ".md"), Render(t, ver, apiver), new UTF8Encoding(false));
                 n++;
             } catch { fail++; }
         }

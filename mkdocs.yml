@@ -18,6 +18,10 @@ theme:
     - content.code.copy
     - navigation.top
     - navigation.instant
+    - navigation.prune
+    - navigation.sections
+    - navigation.indexes
+    - toc.follow
 
 plugins:
   - search:
@@ -35,6 +39,3 @@ validation:
   links:
     absolute_links: ignore
     unrecognized_links: ignore
-
-nav:
-  - Home: index.md
