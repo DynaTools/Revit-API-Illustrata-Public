@@ -3,31 +3,25 @@
 # Codice 6.1.12  |  Capitolo 6.1 - I primitivi geometrici
 # Sezione: I primitivi applicati alle categorie Revit
 
-from Autodesk.Revit.DB import (Outline, BoundingBoxIntersectsFilter,
-    ElementIntersectsElementFilter)
+from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory, XYZ)
 
-def centro_raggio(elem):
-    bb = elem.get_BoundingBox(None)
-    C  = bb.Min + (bb.Max - bb.Min) * 0.5
-    r  = C.DistanceTo(bb.Max)         # semidiagonale = raggio sfera
-    return C, r, bb
+FT_M = 0.3048
 
-Cd, rd, bbd = centro_raggio(duct)
-Cb, rb, bbb = centro_raggio(beam)
+wall = (FilteredElementCollector(doc)
+        .OfCategory(BuiltInCategory.OST_Walls)
+        .WhereElementIsNotElementType().FirstElement())
 
-# FASE 1 - sfera: 1 confronto
-sfera_ok = Cd.DistanceTo(Cb) <= (rd + rb)
-print("1) sfera: {}".format("possibile" if sfera_ok else "escluso"))
+axis = wall.Location.Curve          # asse del muro (centerline)
+n    = wall.Orientation             # normale: punta verso l'esterno
+p0   = axis.GetEndPoint(0)
 
-# FASE 2 - AABB: 6 confronti (solo se la sfera non ha escluso)
-aabb_ok = False
-if sfera_ok:
-    f = BoundingBoxIntersectsFilter(Outline(bbd.Min, bbd.Max))
-    aabb_ok = f.PassesFilter(doc, beam.Id)
-    print("2) AABB: {}".format("possibile" if aabb_ok else "escluso"))
+print("Asse muro da ({:.2f}, {:.2f}) a ({:.2f}, {:.2f}) m".format(
+    p0.X*FT_M, p0.Y*FT_M,
+    axis.GetEndPoint(1).X*FT_M, axis.GetEndPoint(1).Y*FT_M))
+print("Normale (esterno): ({:.0f}, {:.0f}, {:.0f})".format(n.X, n.Y, n.Z))
 
-# FASE 3 - solido esatto (solo se l'AABB non ha escluso)
-if aabb_ok:
-    f = ElementIntersectsElementFilter(beam)
-    clash = f.PassesFilter(doc, duct.Id)
-    print("3) solido: {}".format("CLASH CONFERMATO" if clash else "nessun clash"))
+# Da che lato del muro si trova il centro della EC-01?
+C = XYZ(32.40 / FT_M, 18.20 / FT_M, 4.00 / FT_M)
+d = n.DotProduct(C - p0) * FT_M     # distanza con segno
+lato = "esterno" if d > 0 else "interno"
+print("EC-01 sul lato {}: {:.2f} m dall'asse".format(lato, abs(d)))

@@ -7,18 +7,23 @@ from Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory
 
 FT_M = 0.3048
 
-categorie = [
-    ("CableTray", BuiltInCategory.OST_CableTray),
-    ("Conduit",   BuiltInCategory.OST_Conduit),
-    ("Pipe",      BuiltInCategory.OST_PipeCurves),
-    ("Duct",      BuiltInCategory.OST_DuctCurves),
-]
+# element = la passerella EC-01 (es. uidoc.Selection.PickObject(...))
+# Solaio (Floor) di riferimento
+floor = (FilteredElementCollector(doc)
+         .OfCategory(BuiltInCategory.OST_Floors)
+         .WhereElementIsNotElementType().FirstElement())
+z_top = floor.get_BoundingBox(None).Max.Z * FT_M   # faccia superiore
 
-for nome, bic in categorie:
-    elementi = (FilteredElementCollector(doc)
-                .OfCategory(bic)
-                .WhereElementIsNotElementType().ToElements())
-    L = 0.0
-    for e in elementi:
-        L += e.Location.Curve.Length * FT_M   # vale per ogni MEPCurve
-    print("{:>10}: {:>2} elementi, {:>6.2f} m".format(nome, len(elementi), L))
+# Passerella EC-01 (categoria OST_CableTray)
+z_bottom = element.get_BoundingBox(None).Min.Z * FT_M   # faccia inferiore
+
+# Altezza libera e verifica
+h_libera = z_bottom - z_top
+h_min    = 2.70
+margine  = h_libera - h_min
+
+print("Faccia sup. solaio: {:.2f} m".format(z_top))
+print("Faccia inf. EC-01:  {:.2f} m".format(z_bottom))
+print("Altezza libera: {:.2f} m  (minimo {:.2f} m)".format(h_libera, h_min))
+print("Verifica: {}".format(
+    "OK, margine {:.2f} m".format(margine) if margine >= 0 else "VIOLATA"))

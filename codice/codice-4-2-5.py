@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 4.2.5  |  Capitolo 4.2 - Il metodo Spy: replicare e generalizzare
+# Codice 4.2.5  |  Capitolo 4.2 - Il metodo Spy → Replicare → Generalizzare
 # Sezione: Un caso completo, da cima a fondo
 
 el = doc.GetElement(list(uidoc.Selection.GetElementIds())[0])

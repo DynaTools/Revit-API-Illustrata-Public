@@ -1,28 +1,17 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 6.1.3  |  Capitolo 6.1 - I primitivi geometrici
-# Sezione: Il piano - Plane
+# Sezione: I due prodotti e l'angolo
 
-from Autodesk.Revit.DB import Plane, XYZ
+import math
+from Autodesk.Revit.DB import XYZ
 
-FT_M = 0.3048
+# Tubo di scarico: 5,00 m in orizzontale, 0,10 m di dislivello
+P0 = XYZ(0.0, 0.0, 0.00)
+P1 = XYZ(5.0, 0.0, 0.10)
+u  = (P1 - P0).Normalize()
 
-# Piano orizzontale alla quota +4.00 m (come la EC-01)
-normal = XYZ(0, 0, 1)
-origin = XYZ(0, 0, 4.00 / FT_M)
-piano  = Plane.CreateByNormalAndOrigin(normal, origin)
-
-# Distanza con segno di un punto Q dal piano
-# Q leggermente sopra il piano: z = 4.05 m
-Q = XYZ(32.40 / FT_M, 18.20 / FT_M, 4.05 / FT_M)
-delta_m = piano.SignedDistanceTo(Q) * FT_M
-print("Distanza con segno: {:.3f} m".format(delta_m))
-print("Q sopra il piano?", delta_m > 0)
-
-# Piano verticale che passa per la direzione u della EC-01
-# n = vettore perpendicolare a u in piano orizzontale = (-0.5, 0.866, 0)
-n_vert = XYZ(-0.5, 0.866, 0)
-P_asse = XYZ(32.40 / FT_M, 18.20 / FT_M, 4.00 / FT_M)  # centro EC-01
-piano_v = Plane.CreateByNormalAndOrigin(n_vert, P_asse)
-print("Piano verticale creato. Normale: ({:.3f}, {:.3f}, {:.3f})".format(
-    piano_v.Normal.X, piano_v.Normal.Y, piano_v.Normal.Z))
+# u.Z e' il seno dell'angolo con il piano orizzontale
+alpha = math.degrees(math.asin(u.Z))
+print("Pendenza: {:.1f} gradi".format(alpha))
+print("Pendenza: {:.1f} %".format(100.0 * math.tan(math.radians(alpha))))

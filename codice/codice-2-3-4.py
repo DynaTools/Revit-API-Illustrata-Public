@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 2.3.4  |  Capitolo 2.3 - Revit Python Shell: il playground
+# Codice 2.3.4  |  Capitolo 2.3 - RevitPythonShell: il playground
 # Sezione: Conservare: le variabili sono scatole con etichetta
 
 >>> n = 5

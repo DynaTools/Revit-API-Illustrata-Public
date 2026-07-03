@@ -1,27 +1,32 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 6.1.10  |  Capitolo 6.1 - I primitivi geometrici
-# Sezione: I primitivi applicati alle categorie Revit
+# Sezione: Il triangolo e le mesh - face.Triangulate()
 
-from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory, XYZ)
+from Autodesk.Revit.DB import Options, Solid
+import math
 
 FT_M = 0.3048
 
-wall = (FilteredElementCollector(doc)
-        .OfCategory(BuiltInCategory.OST_Walls)
-        .WhereElementIsNotElementType().FirstElement())
+# element = il tuo elemento (es. uidoc.Selection.PickObject(...))
+opt  = Options()
+geom = element.get_Geometry(opt)
+n_tri    = 0
+area_m2  = 0.0
 
-axis = wall.Location.Curve          # asse del muro (centerline)
-n    = wall.Orientation             # normale: punta verso l'esterno
-p0   = axis.GetEndPoint(0)
+for g in geom:
+    if not isinstance(g, Solid): continue
+    for face in g.Faces:
+        mesh = face.Triangulate()
+        for i in range(mesh.NumTriangles):
+            t  = mesh.get_Triangle(i)
+            P1, P2, P3 = (t.get_Vertex(j) for j in range(3))
+            a = P2 - P1;  b = P3 - P1
+            # prodotto vettoriale: n = a x b
+            cx = a.Y*b.Z - a.Z*b.Y
+            cy = a.Z*b.X - a.X*b.Z
+            cz = a.X*b.Y - a.Y*b.X
+            area_m2 += 0.5 * math.sqrt(cx*cx + cy*cy + cz*cz) * FT_M**2
+            n_tri += 1
 
-print("Asse muro da ({:.2f}, {:.2f}) a ({:.2f}, {:.2f}) m".format(
-    p0.X*FT_M, p0.Y*FT_M,
-    axis.GetEndPoint(1).X*FT_M, axis.GetEndPoint(1).Y*FT_M))
-print("Normale (esterno): ({:.0f}, {:.0f}, {:.0f})".format(n.X, n.Y, n.Z))
-
-# Da che lato del muro si trova il centro della EC-01?
-C = XYZ(32.40 / FT_M, 18.20 / FT_M, 4.00 / FT_M)
-d = n.DotProduct(C - p0) * FT_M     # distanza con segno
-lato = "esterno" if d > 0 else "interno"
-print("EC-01 sul lato {}: {:.2f} m dall'asse".format(lato, abs(d)))
+print("Triangoli: {}   Area totale: {:.2f} m2".format(n_tri, area_m2))

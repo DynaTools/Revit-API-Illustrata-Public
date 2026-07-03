@@ -1,27 +1,25 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 6.1.7  |  Capitolo 6.1 - I primitivi geometrici
-# Sezione: Il raggio - ReferenceIntersector
+# Sezione: Il bounding box orientato (OBB) - Transform
 
-from Autodesk.Revit.DB import (ReferenceIntersector, XYZ,
-    FindReferenceTarget, ElementCategoryFilter, BuiltInCategory)
+from Autodesk.Revit.DB import XYZ
 
 FT_M = 0.3048
 
-# Crea l'intersector su una vista 3D (necessaria)
-cat_filt    = ElementCategoryFilter(BuiltInCategory.OST_StructuralColumns)
-intersector = ReferenceIntersector(cat_filt,
-                  FindReferenceTarget.Face, view3d)
-intersector.FindReferencesInRevitLinks = False
+# element = il tuo elemento (es. uidoc.Selection.PickObject(...))
+# Per una FamilyInstance la Transform descrive il frame locale
+fi    = element                           # assumiamo FamilyInstance
+tf    = fi.GetTransform()
 
-# Raggio verticale verso il basso dall'asse EC-01
-origin    = XYZ(32.40 / FT_M, 18.20 / FT_M, 8.00 / FT_M)   # da 8 m
-direction = XYZ(0, 0, -1)                                      # verso il basso
+# Origine e assi locali in coordinate globali
+origin = tf.Origin
+u_hat  = tf.BasisX                        # asse longitudinale (normalizzato)
+v_hat  = tf.BasisY                        # asse trasversale
+w_hat  = tf.BasisZ                        # asse verticale
 
-result = intersector.FindNearest(origin, direction)
-if result:
-    t_m = result.Proximity * FT_M
-    print("Prima superficie colpita a {:.3f} m".format(t_m))
-    print("Riferimento: {}".format(result.GetReference().ElementId))
-else:
-    print("Nessuna superficie colpita nella direzione data.")
+print("Origine: ({:.3f}, {:.3f}, {:.3f}) m".format(
+    origin.X*FT_M, origin.Y*FT_M, origin.Z*FT_M))
+print("u: ({:.3f}, {:.3f}, {:.3f})".format(u_hat.X, u_hat.Y, u_hat.Z))
+print("v: ({:.3f}, {:.3f}, {:.3f})".format(v_hat.X, v_hat.Y, v_hat.Z))
+print("w: ({:.3f}, {:.3f}, {:.3f})".format(w_hat.X, w_hat.Y, w_hat.Z))

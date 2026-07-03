@@ -12,5 +12,5 @@ for w in walls:                        # R7
     curve  = w.Location.Curve            # R1 - domino
     total += curve.Length                # R1 - in piedi! (LEGGE II)
 
-metros = UnitUtils.ConvertFromInternalUnits(total, UnitTypeId.Meters)
-print(round(metros, 2), "m")
+metri = UnitUtils.ConvertFromInternalUnits(total, UnitTypeId.Meters)
+print(round(metri, 2), "m")

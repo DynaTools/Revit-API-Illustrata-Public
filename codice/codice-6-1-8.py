@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 6.1.8  |  Capitolo 6.1 - I primitivi geometrici
-# Sezione: Il triangolo e le mesh - face.Triangulate()
+# Sezione: La sfera di contenimentosec:sfera
 
-from Autodesk.Revit.DB import Options, Solid
 import math
+from Autodesk.Revit.DB import XYZ
 
 FT_M = 0.3048
 
-opt  = Options()
-geom = element.get_Geometry(opt)
-n_tri    = 0
-area_m2  = 0.0
+# element = il tuo elemento (es. uidoc.Selection.PickObject(...))
+bb   = element.get_BoundingBox(None)
+C    = bb.Min + (bb.Max - bb.Min) * 0.5   # centro
+r_ft = C.DistanceTo(bb.Max)               # raggio in piedi (semidiagonale)
+r_m  = r_ft * FT_M
 
-for g in geom:
-    if not isinstance(g, Solid): continue
-    for face in g.Faces:
-        mesh = face.Triangulate()
-        for i in range(mesh.NumTriangles):
-            t  = mesh.get_Triangle(i)
-            P1, P2, P3 = (t.get_Vertex(j) for j in range(3))
-            a = P2 - P1;  b = P3 - P1
-            # prodotto vettoriale: n = a x b
-            cx = a.Y*b.Z - a.Z*b.Y
-            cy = a.Z*b.X - a.X*b.Z
-            cz = a.X*b.Y - a.Y*b.X
-            area_m2 += 0.5 * math.sqrt(cx*cx + cy*cy + cz*cz) * FT_M**2
-            n_tri += 1
+# Test rapido: il punto Q e' nella sfera di contenimento?
+Q = XYZ(35.0 / FT_M, 19.0 / FT_M, 4.0 / FT_M)
+in_sfera = C.DistanceTo(Q) <= r_ft
 
-print("Triangoli: {}   Area totale: {:.2f} m2".format(n_tri, area_m2))
+print("Centro: ({:.2f}, {:.2f}, {:.2f}) m".format(
+    C.X*FT_M, C.Y*FT_M, C.Z*FT_M))
+print("Raggio: {:.3f} m".format(r_m))
+print("Q nella sfera?", in_sfera)

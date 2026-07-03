@@ -1,24 +1,29 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 6.1.5  |  Capitolo 6.1 - I primitivi geometrici
-# Sezione: Il bounding box orientato (OBB) - Transform
+# Sezione: Il piano - Planesec:piano
 
-from Autodesk.Revit.DB import XYZ
+from Autodesk.Revit.DB import Plane, XYZ
 
 FT_M = 0.3048
 
-# Per una FamilyInstance la Transform descrive il frame locale
-fi    = element                           # assumiamo FamilyInstance
-tf    = fi.GetTransform()
+# Piano orizzontale alla quota +4.00 m (come la EC-01)
+normal = XYZ(0, 0, 1)
+origin = XYZ(0, 0, 4.00 / FT_M)
+piano  = Plane.CreateByNormalAndOrigin(normal, origin)
 
-# Origine e assi locali in coordinate globali
-origin = tf.Origin
-u_hat  = tf.BasisX                        # asse longitudinale (normalizzato)
-v_hat  = tf.BasisY                        # asse trasversale
-w_hat  = tf.BasisZ                        # asse verticale
+# Distanza con segno di un punto Q dal piano
+# Q leggermente sopra il piano: z = 4.05 m
+Q = XYZ(32.40 / FT_M, 18.20 / FT_M, 4.05 / FT_M)
+# distanza con segno = proiezione di (Q - origine) sulla normale unitaria
+delta_m = piano.Normal.DotProduct(Q - piano.Origin) * FT_M
+print("Distanza con segno: {:.3f} m".format(delta_m))
+print("Q sopra il piano?", delta_m > 0)
 
-print("Origine: ({:.3f}, {:.3f}, {:.3f}) m".format(
-    origin.X*FT_M, origin.Y*FT_M, origin.Z*FT_M))
-print("u: ({:.3f}, {:.3f}, {:.3f})".format(u_hat.X, u_hat.Y, u_hat.Z))
-print("v: ({:.3f}, {:.3f}, {:.3f})".format(v_hat.X, v_hat.Y, v_hat.Z))
-print("w: ({:.3f}, {:.3f}, {:.3f})".format(w_hat.X, w_hat.Y, w_hat.Z))
+# Piano verticale che passa per la direzione u della EC-01
+# n = vettore perpendicolare a u in piano orizzontale = (-0.5, 0.866, 0)
+n_vert = XYZ(-0.5, 0.866, 0)
+P_asse = XYZ(32.40 / FT_M, 18.20 / FT_M, 4.00 / FT_M)  # centro EC-01
+piano_v = Plane.CreateByNormalAndOrigin(n_vert, P_asse)
+print("Piano verticale creato. Normale: ({:.3f}, {:.3f}, {:.3f})".format(
+    piano_v.Normal.X, piano_v.Normal.Y, piano_v.Normal.Z))
