@@ -1,33 +1,32 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 7.1.3  |  Capitolo 7.1 - Lo staffaggio
-# Sezione: Passi 3--4 - carico, verifica e numero di staffe
+# Sezione: Bonus - tutto il modello, e l'abaco fa il totale
 
-# PASSO 3-4: staffaggio
-G         = 9.81     # accelerazione di gravita' (m/s^2)
-interasse = 2.0      # m, passo scelto fra le staffe
-portata   = 60.0     # kg, portata di una staffa (da catalogo)
+# BONUS: staffaggio di tutte le passerelle del modello
+from Autodesk.Revit.DB import (FilteredElementCollector,
+                               BuiltInCategory)
 
-# Carico su ogni staffa = peso di una campata
-F = w * interasse                              # kg
-F_N = F * G                                    # newton
+tratti = (FilteredElementCollector(doc)
+          .OfCategory(BuiltInCategory.OST_CableTray)
+          .WhereElementIsNotElementType())
 
-# Numero di staffe lungo il tratto (estremi inclusi)
-N = int(math.ceil(L_run / interasse)) + 1
+tot = 0
+t = Transaction(doc, "Staffaggio del modello")
+t.Start()
+for tr in tratti:
+    L = tr.Location.Curve.Length * FT_M
+    w_t = PESO_PASSERELLA
+    for nome, peso in PESI.items():
+        par = tr.LookupParameter(nome)
+        w_t += peso * (par.AsInteger() if par else 0)
+    n_t = int(math.ceil(L / INTERASSE)) + 1
+    tr.LookupParameter("Staffe n").Set(n_t)
+    tr.LookupParameter("Staffe interasse").Set(INTERASSE / FT_M)
+    tot += n_t
+    print("{}: L = {:5.2f} m  w = {:5.2f} kg/m  ->  {} staffe".format(
+        tr.Name, L, w_t, n_t))
+t.Commit()
 
-# Interasse massimo consentito dalla portata della staffa
-i_max = portata / w
-
-conforme = F <= portata
-
-print("Peso totale del tratto: {:.1f} kg".format(w * L_run))
-print("Interasse scelto: {:.2f} m".format(interasse))
-print("Carico per staffa: {:.1f} kg  ({:.0f} N)".format(F, F_N))
-print("Portata staffa: {:.1f} kg".format(portata))
-print("Numero di staffe: {}".format(N))
-print("Interasse massimo ammesso: {:.2f} m".format(i_max))
 print("---")
-if conforme:
-    print("ESITO: CONFORME (margine {:.1f} kg)".format(portata - F))
-else:
-    print("ESITO: NON CONFORME - avvicinare le staffe")
+print("Totale staffe nel modello: {}".format(tot))

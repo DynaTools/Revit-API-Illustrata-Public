@@ -5,4 +5,4 @@
 
     state = el.LookupParameter("Stato").AsString()
     if state == "Da verificare":
-        el.LookupParameter("Comments").Set("In sospeso")
+        el.LookupParameter("Commenti").Set("In sospeso")
