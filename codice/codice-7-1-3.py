@@ -1,32 +1,34 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 7.1.3  |  Capitolo 7.1 - Lo staffaggio
-# Sezione: Bonus - tutto il modello, e l'abaco fa il totale
+# Sezione: Passo 3 - soglie e verifica (sezioni 6-7)
 
-# BONUS: staffaggio di tutte le passerelle del modello
-from Autodesk.Revit.DB import (FilteredElementCollector,
-                               BuiltInCategory)
+# ============================================================
+# 6. PASSO 3, SOGLIE E VERIFICA                          [ENG]
+#    carico per staffa, numero di staffe, interasse
+# ============================================================
+import math
 
-tratti = (FilteredElementCollector(doc)
-          .OfCategory(BuiltInCategory.OST_CableTray)
-          .WhereElementIsNotElementType())
+G           = 9.81   # m/s^2
+INTERASSE   = 1.50   # m, prassi di catalogo
+PORTATA     = 152.9  # kg, staffa 41/600: 1500 N (CEI EN 61537)
+CAMPATA_MAX = 2.00   # m, dal diagramma di carico
 
-tot = 0
-t = Transaction(doc, "Staffaggio del modello")
-t.Start()
-for tr in tratti:
-    L = tr.Location.Curve.Length * FT_M
-    w_t = PESO_PASSERELLA
-    for nome, peso in PESI.items():
-        par = tr.LookupParameter(nome)
-        w_t += peso * (par.AsInteger() if par else 0)
-    n_t = int(math.ceil(L / INTERASSE)) + 1
-    tr.LookupParameter("Staffe n").Set(n_t)
-    tr.LookupParameter("Staffe interasse").Set(INTERASSE / FT_M)
-    tot += n_t
-    print("{}: L = {:5.2f} m  w = {:5.2f} kg/m  ->  {} staffe".format(
-        tr.Name, L, w_t, n_t))
-t.Commit()
+F   = w * INTERASSE                        # carico per staffa (kg)
+F_N = F * G                                # in newton
+N   = int(math.ceil(L_run / INTERASSE)) + 1
 
-print("---")
-print("Totale staffe nel modello: {}".format(tot))
+i_max_staffa = PORTATA / w                 # vincolo della mensola
+i_ammesso    = min(i_max_staffa, CAMPATA_MAX)
+conforme     = (F <= PORTATA) and (INTERASSE <= CAMPATA_MAX)
+
+# ============================================================
+# 7. L'ESITO                                             [OUT]
+# ============================================================
+print("Peso del tratto: {:.1f} kg".format(w * L_run))
+print("Carico per staffa: {:.1f} kg  ({:.0f} N)".format(F, F_N))
+print("Numero di staffe: {}".format(N))
+print("Interasse ammesso: {:.2f} m  (mensola {:.2f} / campata {:.2f})".format(
+    i_ammesso, i_max_staffa, CAMPATA_MAX))
+print("ESITO: {}".format("CONFORME (margine {:.1f} kg)".format(PORTATA - F)
+                         if conforme else "NON CONFORME"))

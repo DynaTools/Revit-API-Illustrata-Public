@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 7.1.1  |  Capitolo 7.1 - Lo staffaggio
-# Sezione: Passi 1--2 - leggere il tratto e sommare i pesi
+# Sezione: Passi 1--2 - preparazione, dati di progetto e selezione (sezioni 0-2)
 
 # -*- coding: utf-8 -*-
-import math
-from Autodesk.Revit.DB import Transaction
+# ============================================================
+# 0. PREPARAZIONE                               [PY] + [REVIT]
+#    librerie e documento Revit attivo
+# ============================================================
 from Autodesk.Revit.UI.Selection import ObjectType
 
 FT_M = 0.3048                      # 1 piede = 0.3048 m
@@ -13,30 +15,21 @@ FT_M = 0.3048                      # 1 piede = 0.3048 m
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
 
-# tabella di progetto: peso al metro dei cavi (kg/m, da scheda tecnica)
+# ============================================================
+# 1. DATI DI PROGETTO                                    [ENG]
+#    pesi al metro dalle schede tecniche (kg/m)
+# ============================================================
 PESI = {
     "FG16 4G95":  4.10,
     "FG16 5G16":  1.35,
     "FG16 3G2.5": 0.18,
 }
-PESO_PASSERELLA = 5.00            # kg/m, dal catalogo (base 300 mm)
+PESO_PASSERELLA = 5.00             # kg/m, catalogo (450 x 100)
 
-# PASSO 1: clicca il tratto e leggi lunghezza + parametri dei cavi
+# ============================================================
+# 2. PASSO 1, IL CLIC                                  [REVIT]
+#    l'utente seleziona il tratto nel modello
+# ============================================================
 ref  = uidoc.Selection.PickObject(ObjectType.Element,
                                   "Seleziona la passerella")
 tray = doc.GetElement(ref.ElementId)
-L_run = tray.Location.Curve.Length * FT_M
-
-print("Tratto: {}   L = {:.2f} m".format(tray.Name, L_run))
-
-# PASSO 2: peso al metro = passerella + somma (peso x quantita')
-w = PESO_PASSERELLA
-for nome, peso in PESI.items():
-    par = tray.LookupParameter(nome)
-    n = par.AsInteger() if par else 0
-    w += peso * n
-    print("  {:>11}: {:.2f} kg/m  x{}  ->  {:.2f} kg/m".format(
-        nome, peso, n, peso * n))
-
-print("Peso passerella: {:.2f} kg/m".format(PESO_PASSERELLA))
-print("Peso al metro w: {:.2f} kg/m".format(w))

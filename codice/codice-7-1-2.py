@@ -1,35 +1,29 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 7.1.2  |  Capitolo 7.1 - Lo staffaggio
-# Sezione: Passi 3--4 - staffe, verifica e scrittura sul modello
+# Sezione: Passi 1--2 - lettura, calcolo e risultato (sezioni 3-5)
 
-# PASSO 3: staffe e verifica
-G           = 9.81   # m/s^2
-INTERASSE   = 1.50   # m, prassi di catalogo
-PORTATA     = 80.0   # kg, mensola B300: 784 N (CEI EN 61537)
-CAMPATA_MAX = 2.00   # m, dal diagramma di carico della passerella
+# ============================================================
+# 3. PASSO 1, LA LETTURA                       [REVIT] + [ENG]
+#    lunghezza della curva, da piedi a metri (Legge II)
+# ============================================================
+L_run = tray.Location.Curve.Length * FT_M
+print("Tratto: {}   L = {:.2f} m".format(tray.Name, L_run))
 
-F   = w * INTERASSE                        # carico per staffa (kg)
-F_N = F * G                                # in newton
-N   = int(math.ceil(L_run / INTERASSE)) + 1
+# ============================================================
+# 4. PASSO 2, IL CALCOLO                       [ENG] + [REVIT]
+#    w = passerella + somma (peso x quantita')
+# ============================================================
+w = PESO_PASSERELLA
+for nome, peso in PESI.items():
+    par = tray.LookupParameter(nome)
+    n = par.AsInteger() if par else 0
+    w += peso * n
+    print("  {:>11}: {:.2f} kg/m  x{}  ->  {:.2f} kg/m".format(
+        nome, peso, n, peso * n))
 
-i_max_staffa = PORTATA / w                 # vincolo della mensola
-i_ammesso    = min(i_max_staffa, CAMPATA_MAX)
-conforme     = (F <= PORTATA) and (INTERASSE <= CAMPATA_MAX)
-
-print("Peso del tratto: {:.1f} kg".format(w * L_run))
-print("Carico per staffa: {:.1f} kg  ({:.0f} N)".format(F, F_N))
-print("Numero di staffe: {}".format(N))
-print("Interasse ammesso: {:.2f} m  (mensola {:.2f} / campata {:.2f})".format(
-    i_ammesso, i_max_staffa, CAMPATA_MAX))
-print("ESITO: {}".format("CONFORME (margine {:.1f} kg)".format(PORTATA - F)
-                         if conforme else "NON CONFORME"))
-
-# PASSO 4: scrivi il risultato sul tratto (LEGGE I: in transazione)
-t = Transaction(doc, "Staffaggio EC-01")
-t.Start()
-tray.LookupParameter("Staffe n").Set(N)
-tray.LookupParameter("Staffe interasse").Set(INTERASSE / FT_M)  # in piedi
-t.Commit()
-print("Scritti sul tratto: Staffe n = {}, interasse = {:.2f} m".format(
-    N, INTERASSE))
+# ============================================================
+# 5. IL RISULTATO                                        [OUT]
+# ============================================================
+print("Peso passerella: {:.2f} kg/m".format(PESO_PASSERELLA))
+print("Peso al metro w: {:.2f} kg/m".format(w))
