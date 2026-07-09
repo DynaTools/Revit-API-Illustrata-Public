@@ -19,7 +19,7 @@ PESI = {
     "FG16 5G16":  1.35,
     "FG16 3G2.5": 0.18,
 }
-PESO_PASSERELLA = 3.50             # kg/m, dal catalogo (base 300 mm)
+PESO_PASSERELLA = 5.00            # kg/m, dal catalogo (base 300 mm)
 
 # PASSO 1: clicca il tratto e leggi lunghezza + parametri dei cavi
 ref  = uidoc.Selection.PickObject(ObjectType.Element,
