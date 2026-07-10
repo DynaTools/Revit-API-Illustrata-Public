@@ -33,7 +33,10 @@ print("Tratto: {}   L = {:.2f} m".format(tray.Name, L_run))
 w = PESO_PASSERELLA
 for nome, peso in PESI.items():
     par = tray.LookupParameter(nome)
-    n = par.AsInteger() if par else 0
+    if par is None:
+        print("  {:>11}: PARAMETRO ASSENTE sul tratto".format(nome))
+        continue
+    n = par.AsInteger()
     w += peso * n
     print("  {:>11}: {:.2f} kg/m  x{}  ->  {:.2f} kg/m".format(
         nome, peso, n, peso * n))

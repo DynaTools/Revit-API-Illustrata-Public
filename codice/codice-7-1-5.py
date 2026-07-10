@@ -34,14 +34,19 @@ tot = 0
 t = Transaction(doc, "Staffaggio del modello")
 t.Start()
 for tr in tratti:
+    par_n = tr.LookupParameter("Staffe n")
+    par_i = tr.LookupParameter("Staffe interasse")
+    if par_n is None or par_i is None:
+        print("{}: SALTATO, parametri staffe assenti".format(tr.Name))
+        continue
     L = tr.Location.Curve.Length * FT_M
     w_t = PESO_PASSERELLA
     for nome, peso in PESI.items():
         par = tr.LookupParameter(nome)
         w_t += peso * (par.AsInteger() if par else 0)
     n_t = int(math.ceil(L / INTERASSE)) + 1
-    tr.LookupParameter("Staffe n").Set(n_t)
-    tr.LookupParameter("Staffe interasse").Set(INTERASSE / FT_M)
+    par_n.Set(n_t)
+    par_i.Set(INTERASSE / FT_M)
     tot += n_t
     print("{}: L = {:5.2f} m  w = {:5.2f} kg/m  ->  {} staffe".format(
         tr.Name, L, w_t, n_t))
