@@ -1,30 +1,47 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 7.4.1  |  Capitolo 7.4 - Lo schema L--2L
-# Sezione: In Revit - leggere la stanza e posare le luci
+# Sezione: In Revit - leggere la stanza, passo e bordo
 
-from Autodesk.Revit.DB import XYZ
+# ============================================================
+# 0. PREPARAZIONE                               [PY] + [REVIT]
+#    librerie e documento Revit attivo
+# ============================================================
 from Autodesk.Revit.UI.Selection import ObjectType
 
-FT_M = 0.3048
+FT_M = 0.3048                      # 1 piede = 0.3048 m
 
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
 
-# clicca la stanza e leggi il suo riquadro (AABB)
-ref  = uidoc.Selection.PickObject(ObjectType.Element, "Seleziona la stanza")
+# ============================================================
+# 1. IL CLIC SULLA STANZA                              [REVIT]
+#    la stanza e il suo riquadro allineato (AABB)
+# ============================================================
+ref  = uidoc.Selection.PickObject(ObjectType.Element,
+                                  "Seleziona la stanza")
 room = doc.GetElement(ref.ElementId)
 bb   = room.get_BoundingBox(None)
 
+# ============================================================
+# 2. ORIGINE E DIMENSIONI                      [REVIT] + [ENG]
+#    dal riquadro: origine, lati A e B, quota del soffitto
+# ============================================================
 x0 = bb.Min.X * FT_M;  A = (bb.Max.X - bb.Min.X) * FT_M
 y0 = bb.Min.Y * FT_M;  B = (bb.Max.Y - bb.Min.Y) * FT_M
 z  = bb.Max.Z * FT_M                       # quota soffitto
 
-# scelta della griglia
+# ============================================================
+# 3. PASSO E BORDO                                       [ENG]
+#    griglia nx x ny: passo s = lato / n, bordo = s/2
+# ============================================================
 nx, ny = 4, 3
 sx = A / nx
 sy = B / ny
 
+# ============================================================
+# 4. IL RISULTATO                                        [OUT]
+# ============================================================
 print("Stanza: {:.2f} x {:.2f} m".format(A, B))
 print("Griglia {}x{}  ->  passo {:.2f} x {:.2f} m".format(nx, ny, sx, sy))
 print("Bordo: {:.2f} x {:.2f} m".format(sx/2, sy/2))
