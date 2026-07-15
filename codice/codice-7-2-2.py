@@ -25,8 +25,8 @@ z_pass = tratto.Location.Curve.GetEndPoint(0).Z * FT_M
 z_quadro = 3.2       # uscita del cavo in cima al quadro QE-01
 z_carico = 1.0       # morsettiera del motore M-12
 
-risalita = z_pass - z_quadro     # dal quadro su alla passerella
-discesa  = z_pass - z_carico     # dalla passerella giu' al motore
+risalita = abs(z_pass - z_quadro)     # dal quadro su alla passerella
+discesa  = abs(z_pass - z_carico)     # dalla passerella giu' al motore
 L_vert   = risalita + discesa
 
 # ============================================================

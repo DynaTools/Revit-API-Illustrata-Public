@@ -24,7 +24,7 @@ for r in refs:
     L_orizz += el.Location.Curve.Length * FT_M
     z_pass = el.Location.Curve.GetEndPoint(0).Z * FT_M
 
-L_vert = (z_pass - z_quadro) + (z_pass - z_carico)
+L_vert = abs(z_pass - z_quadro) + abs(z_pass - z_carico)
 
 # ============================================================
 # 1. PASSO 4, SFRIDO E TOTALE                            [ENG]
