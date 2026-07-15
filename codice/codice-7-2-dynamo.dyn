@@ -1,7 +1,7 @@
 {
   "Uuid": "732e015c-816b-5089-a9e2-72ba0d5a7835",
   "IsCustomNode": false,
-  "Description": "Grafo del capitolo 7.2 (lunghezza del circuito): lettura del percorso, collegamenti verticali e sfrido.",
+  "Description": "Grafo del capitolo 7.2 (lunghezza del circuito): selezione del percorso, somma delle lunghezze 3D e sfrido.",
   "Name": "cap-7-2-dynamo",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -16,7 +16,7 @@
       "Outputs": [
         {
           "Id": "e7ba49f597d9584f80e97fcc5462a93d",
-          "Name": "Element",
+          "Name": "Elements",
           "Description": "",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -24,7 +24,7 @@
           "KeepListStructure": false
         }
       ],
-      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
       "InstanceId": [],
       "Replication": "Disabled"
     },
@@ -113,7 +113,7 @@
         }
       ],
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Cap. 7.2 - Lunghezza reale del cavo\n# IN[0] = lunghezza del percorso modellato, letta dal modello (m)\nL_orizz = IN[0]\nif isinstance(L_orizz, list):\n    L_orizz = sum(L_orizz)\n\n# quote di progetto (m)\nz_pass   = 4.1     # quota della passerella (dal modello)\nz_quadro = 3.2     # uscita del cavo in cima al quadro QE-01\nz_carico = 1.0     # morsettiera del motore M-12\n\nL_vert = (z_pass - z_quadro) + (z_pass - z_carico)   # risalita + discesa\nL_geom = L_orizz + L_vert                            # lunghezza geometrica\nL_cavo = L_geom * 1.05                               # + 5% di sfrido (posa)\n\nOUT = round(L_cavo, 2)\n",
+      "Code": "# Cap. 7.2 - Lunghezza reale del cavo\n# IN[0] = lunghezze dei tratti (parametro \"Length\", in metri)\nvals = IN[0]\nif not isinstance(vals, list):\n    vals = [vals]\n\n# somma solo i tratti con una lunghezza: i raccordi danno None\nL_mod = sum(v for v in vals if v is not None)\n\nL_cavo = L_mod * 1.05        # + 5% di sfrido (posa)\n\nOUT = round(L_cavo, 2)\n",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Replication": "Disabled",
@@ -213,7 +213,7 @@
         "Id": "16bbd3c217e35a2899a0295f3873abb9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Select Model Element",
+        "Name": "Select Model Elements",
         "ShowGeometry": true,
         "Excluded": false,
         "X": 100.0,

@@ -8,6 +8,7 @@
 #    blocco autonomo: ricrea la caduta percentuale dU_pct
 # ============================================================
 import math
+from Autodesk.Revit.DB import LocationCurve
 from Autodesk.Revit.UI.Selection import ObjectType
 
 FT_M = 0.3048
@@ -17,11 +18,14 @@ Un, Ib, cosphi, S, rho = 400.0, 28.0, 0.85, 6.0, 0.0225
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
 refs  = uidoc.Selection.PickObjects(ObjectType.Element,
-                                    "Seleziona i tratti del percorso")
+                                    "Seleziona tutto il percorso, poi Finish")
 
-L = 0.0
+L_mod = 0.0
 for r in refs:
-    L += doc.GetElement(r.ElementId).Location.Curve.Length * FT_M
+    loc = doc.GetElement(r.ElementId).Location
+    if isinstance(loc, LocationCurve):
+        L_mod += loc.Curve.Length * FT_M
+L = L_mod * 1.05                    # lunghezza del cavo (+ 5% di sfrido)
 
 dU_pct = (math.sqrt(3) * rho * L * Ib * cosphi) / S / Un * 100.0
 
