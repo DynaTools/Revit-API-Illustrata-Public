@@ -32,6 +32,6 @@ for r in refs:
 
 # ============================================================
 # 3. IL RISULTATO                                        [OUT]
-#    nel modello d'esempio QE-01 -> M-12: L = 18.06 m
+#    nel modello d'esempio QE-01 -> M-12: L = 16.80 m
 # ============================================================
 print("Lunghezza del cavo L: {:.2f} m".format(L))

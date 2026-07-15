@@ -22,8 +22,8 @@ z_pass = tratto.Location.Curve.GetEndPoint(0).Z * FT_M
 # 1. PASSO 3, DISCESE E RISALITE                         [ENG]
 #    differenze di quota (quote di progetto, in metri)
 # ============================================================
-z_quadro = 2.0       # partenza del cavo nel quadro QE-01
-z_carico = 0.8       # morsettiera del motore M-12
+z_quadro = 3.2       # uscita del cavo in cima al quadro QE-01
+z_carico = 1.0       # morsettiera del motore M-12
 
 risalita = z_pass - z_quadro     # dal quadro su alla passerella
 discesa  = z_pass - z_carico     # dalla passerella giu' al motore

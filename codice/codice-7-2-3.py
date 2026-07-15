@@ -10,8 +10,8 @@
 from Autodesk.Revit.UI.Selection import ObjectType
 
 FT_M     = 0.3048
-z_quadro = 2.0       # partenza del cavo nel quadro QE-01
-z_carico = 0.8       # morsettiera del motore M-12
+z_quadro = 3.2       # uscita del cavo in cima al quadro QE-01
+z_carico = 1.0       # morsettiera del motore M-12
 
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
