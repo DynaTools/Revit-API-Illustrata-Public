@@ -3,9 +3,9 @@
 # Codice 5.3.1  |  Capitolo 5.3 - Progetto finale: uno strumento da cima a fondo
 # Sezione: Dalla missione allo strumento
 
-vermelho = Color(255, 0, 0)              # R4 - senza new
+rosso = Color(255, 0, 0)                 # R4 - senza new
 ogs = OverrideGraphicSettings()          # R4
-ogs.SetProjectionLineColor(vermelho)     # R2
+ogs.SetProjectionLineColor(rosso)        # R2
 
 limite = UnitUtils.ConvertToInternalUnits(300, UnitTypeId.Millimeters)
                                          # R3 + LEGGE II
