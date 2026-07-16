@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 2.3.8  |  Capitolo 2.3 - RevitPythonShell: il playground
-# Sezione: Decidere: if / else, il bivio
+# Codice 2.3.8  |  Capitolo 2.3 - RevitPythonShell, il playground
+# Sezione: Decidere con if ed else, il bivio
 
 larghezza == 0.25     # DOMANDA: due segni
 larghezza != 0.25     # diverso da?
