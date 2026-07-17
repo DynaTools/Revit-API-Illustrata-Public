@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 4.1.1  |  Capitolo 4.1 - Transazioni: il contratto prima di mettere mano
+# Codice 4.1.1  |  Capitolo 4.1 - Transazioni, il contratto prima di mettere mano
 # Sezione: Perché esiste il contratto
 
 walls = FilteredElementCollector(doc).OfClass(Wall)  # R4 + R2

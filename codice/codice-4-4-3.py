@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 4.4.3  |  Capitolo 4.4 - Gli errori che compaiono nel progetto reale
-# Sezione: Sul documento: collegamenti e worksharing
+# Sezione: Sul documento, collegamenti e worksharing
 
 from Autodesk.Revit.DB import WorksharingUtils, CheckoutStatus
 

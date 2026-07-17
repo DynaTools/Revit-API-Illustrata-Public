@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 4.4.1  |  Capitolo 4.4 - Gli errori che compaiono nel progetto reale
-# Sezione: Sul parametro: quattro silenzi
+# Sezione: Sul parametro, quattro silenzi
 
 from Autodesk.Revit.DB import StorageType, BuiltInParameter
 
-def set_texto(el, bip, value):
+def set_testo(el, bip, value):
     p = el.get_Parameter(bip)            # 4) per BuiltInParameter, non per nome
     if p is None:                        # 1) non esiste su questo elemento
         return "assente"
@@ -17,4 +17,4 @@ def set_texto(el, bip, value):
     return "ok"
 
 # invece di LookupParameter("Comments"):
-set_texto(el, BuiltInParameter.ALL_MODEL_INSTANCE_COMMENTS, "Verificato")
+set_testo(el, BuiltInParameter.ALL_MODEL_INSTANCE_COMMENTS, "Verificato")

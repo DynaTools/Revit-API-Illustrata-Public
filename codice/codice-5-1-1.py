@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 5.1.1  |  Capitolo 5.1 - pyRevit, pulsanti e distribuzione
-# Sezione: Dalla console al pulsante
+# Sezione: Il tuo primo pulsante
 
 from pyrevit import revit
 doc = revit.doc            # lo stesso doc di sempre
