@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 6.1.9  |  Capitolo 6.1 - I primitivi geometrici
+# Codice 6.1.9  |  Capitolo 6.1 - Le primitive geometriche
 # Sezione: Il raggio - ReferenceIntersectorsec:raggio
 
 from Autodesk.Revit.DB import (ReferenceIntersector, XYZ,

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 6.1.8  |  Capitolo 6.1 - I primitivi geometrici
+# Codice 6.1.8  |  Capitolo 6.1 - Le primitive geometriche
 # Sezione: La sfera di contenimentosec:sfera
 
 import math

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 6.1.2  |  Capitolo 6.1 - I primitivi geometrici
+# Codice 6.1.2  |  Capitolo 6.1 - Le primitive geometriche
 # Sezione: I due prodotti e l'angolo
 
 import math
