@@ -12,8 +12,8 @@ from Autodesk.Revit.DB import BuiltInParameter
 from Autodesk.Revit.UI.Selection import ObjectType
 
 FT_MM = 304.8
-catalogo = [("FG16OR16 3G6 mm²", 13.0),
-            ("FG16OR16 3G4 mm²", 11.5)]
+catalogo = [("FG16OR16 3G6 mm²", 14.0),
+            ("FG16OR16 3G4 mm²", 12.5)]
 
 uidoc   = __revit__.ActiveUIDocument
 doc     = uidoc.Document

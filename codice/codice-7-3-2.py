@@ -20,8 +20,8 @@ cavidotto = doc.GetElement(ref.ElementId)
 # 1. PASSO 4, LA DISTINTA DAL MODELLO           [ENG]+[REVIT]
 #    catalogo (schede tecniche) + quantita' dai parametri
 # ============================================================
-catalogo = [("FG16OR16 3G6 mm²", 13.0),
-            ("FG16OR16 3G4 mm²", 11.5)]
+catalogo = [("FG16OR16 3G6 mm²", 14.0),
+            ("FG16OR16 3G4 mm²", 12.5)]
 
 cavi = []
 for nome, d in catalogo:
