@@ -14,5 +14,5 @@ tipi = (FilteredElementCollector(doc)
         .OfCategory(BuiltInCategory.OST_DuctCurves)
         .WhereElementIsElementType())         # le ricette a catalogo
 
-print("canali posati    ->", len(list(istanze)))
-print("tipi a catalogo  ->", len(list(tipi)))
+print("canali posati    ->", istanze.GetElementCount())
+print("tipi a catalogo  ->", tipi.GetElementCount())
