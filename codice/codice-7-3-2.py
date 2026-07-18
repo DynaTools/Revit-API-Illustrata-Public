@@ -1,25 +1,37 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
 # Codice 7.3.2  |  Capitolo 7.3 - Il riempimento dei cavidotti
-# Sezione: Passo 3 - aggiungere i cavi
+# Sezione: Passo 4 - la distinta letta dal modello
 
 # ============================================================
-# 0. RIPARTENZA                                           [PY]
-#    blocco autonomo: qui basta la matematica, un import
+# 0. RIPARTENZA                                  [PY]+[REVIT]
+#    blocco autonomo: si riclicca il cavidotto del passo 2
 # ============================================================
 import math
+from Autodesk.Revit.UI.Selection import ObjectType
+
+uidoc = __revit__.ActiveUIDocument
+doc   = uidoc.Document
+ref   = uidoc.Selection.PickObject(ObjectType.Element,
+                                   "Seleziona il cavidotto")
+cavidotto = doc.GetElement(ref.ElementId)
 
 # ============================================================
-# 1. PASSO 3, I CAVI                                     [ENG]
-#    i cavi da infilare: nome, diametro esterno, quantita'
+# 1. PASSO 4, LA DISTINTA DAL MODELLO           [ENG]+[REVIT]
+#    catalogo (schede tecniche) + quantita' dai parametri
 # ============================================================
-cavi = [
-    ("FG16OR16 3G2.5", 11.5, 2),
-    ("N07V-K 1x4",      4.4, 3),
-]
+catalogo = [("FG16OR16 3G6 mm²", 13.0),
+            ("FG16OR16 3G4 mm²", 11.5)]
+
+cavi = []
+for nome, d in catalogo:
+    p = cavidotto.LookupParameter(nome)
+    q = p.AsInteger() if p else 0
+    if q > 0:
+        cavi.append((nome, d, q))
 
 # ============================================================
-# 2. LA SOMMA DELLE AREE                          [PY] + [ENG]
+# 2. LA SOMMA DELLE AREE                          [PY]+[ENG]
 #    area di ogni famiglia e somma dei quadrati dei diametri
 # ============================================================
 A_cavi = 0.0      # somma delle aree dei cavi (mm^2)
@@ -31,7 +43,7 @@ for nome, d, q in cavi:
     A_cavi   += area_singolo * q
     somma_d2 += d**2 * q
     n_cavi   += q
-    print("{:>16}: d={:.1f} mm  x{}  ->  {:.0f} mm2".format(
+    print("{:>17}: d={:.1f} mm  x{}  ->  {:.0f} mm2".format(
         nome, d, q, area_singolo * q))
 
 # ============================================================

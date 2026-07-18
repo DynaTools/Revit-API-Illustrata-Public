@@ -5,14 +5,15 @@
 
 # ============================================================
 # 0. RIPARTENZA                            [PY]+[REVIT]+[ENG]
-#    blocco autonomo: ricrea De, A_tubo e le aree dei cavi
+#    blocco autonomo: riclic, De, parametri e aree dei cavi
 # ============================================================
 import math
 from Autodesk.Revit.DB import BuiltInParameter
 from Autodesk.Revit.UI.Selection import ObjectType
 
 FT_MM = 304.8
-cavi  = [("FG16OR16 3G2.5", 11.5, 2), ("N07V-K 1x4", 4.4, 3)]
+catalogo = [("FG16OR16 3G6 mm²", 13.0),
+            ("FG16OR16 3G4 mm²", 11.5)]
 
 uidoc   = __revit__.ActiveUIDocument
 doc     = uidoc.Document
@@ -22,6 +23,9 @@ conduit = doc.GetElement(ref.ElementId)
 De      = conduit.get_Parameter(
     BuiltInParameter.RBS_CONDUIT_INNER_DIAM_PARAM).AsDouble() * FT_MM
 A_tubo  = math.pi / 4.0 * De**2
+
+cavi = [(n, d, conduit.LookupParameter(n).AsInteger())
+        for n, d in catalogo if conduit.LookupParameter(n)]
 
 A_cavi = somma_d2 = 0.0
 for nome, d, q in cavi:
