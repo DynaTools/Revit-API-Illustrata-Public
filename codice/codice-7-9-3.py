@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.9.3  |  Capitolo 7.9 - La portata d'aria nei condotti
-# Sezione: Passo 4 - verificare i limiti di comfort
+# Codice 7.9.3  |  Capitolo 7.9 - La pressione dell'acqua fredda in bagno
+# Sezione: Passo 4 - verificare il minimo di ognuno
 
-# PASSO 4: verifica contro la fascia raccomandata (ramo derivato)
-V_MIN = 3.0      # m/s - sotto: canale sovradimensionato
-V_MAX = 5.0      # m/s - sopra: rumore e perdite di carico
+# PASSO 4: verifica apparecchio per apparecchio
+print("--- VERIFICA BAGNO BA-01 ---")
+tutti_ok = True
+for nome, z_app, battente, p_res, p_min in risultati:
+    ok = p_res >= p_min
+    tutti_ok = tutti_ok and ok
+    esito = "OK" if ok else "INSUFFICIENTE"
+    print("{:<20} {:.2f} mca  (min {:.2f})  {}".format(
+        nome, p_res, p_min, esito))
 
-if v < V_MIN:
-    esito = "SOTTO LA FASCIA - canale sovradimensionato"
-elif v > V_MAX:
-    esito = "SOPRA LA FASCIA - rischio rumore e perdite"
+print("---")
+if tutti_ok:
+    print("ESITO: bagno CONFORME - tutti gli apparecchi alimentati")
 else:
-    esito = "NELLA FASCIA - OK"
-
-print("Velocita': {:.2f} m/s   (fascia consigliata {:.0f}-{:.0f} m/s)".format(
-    v, V_MIN, V_MAX))
-print("ESITO: {}".format(esito))
+    print("ESITO: NON CONFORME - serve piu' battente (serbatoio piu'")
+    print("       alto) o una pompa di rilancio / autoclave")

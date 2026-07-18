@@ -1,14 +1,34 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.19.2  |  Capitolo 7.19 - I ricambi d'aria e il numero di diffusori
-# Sezione: Quando il ceil serve davvero - ricambi non interi
+# Codice 7.19.2  |  Capitolo 7.19 - La distanza di sicurezza da una sorgente di rumore
+# Sezione: Passi 3--4 - i ricettori e il verdetto
 
-# stesso strumento, sala con occupazione piu' densa
-n = 2.5                            # ricambi orari (vol/h)
-Q = n * V                         # 2.5 * 72.00 = 180.0 m3/h
-N_diff = int(math.ceil(Q / q_diff))
+# PASSO 3: misura i ricettori e calcola il livello a ciascuno
+# (i ricettori sono elementi del modello: finestre, punti di confine...)
+ricettori = (FilteredElementCollector(doc)
+             .OfCategory(BuiltInCategory.OST_Windows)
+             .WhereElementIsNotElementType()
+             .ToElements())
 
-print("Ricambi n: {:.1f} vol/h".format(n))
-print("Portata Q = n*V: {:.1f} m3/h".format(Q))
-print("Rapporto Q/q_diff: {:.1f}".format(Q / q_diff))
-print("Diffusori = ceil({:.1f}) = {}".format(Q / q_diff, N_diff))
+print("Ricettore        dist (m)   Lp (dB)   esito")
+print("-" * 46)
+violazioni = 0
+for r in ricettori:
+    p = r.Location.Point if r.Location else None
+    if p is None:
+        continue
+    d = origine.DistanceTo(p) * FT_M       # distanza in metri
+    livello = Lp(LW, d)
+    ok = livello <= LIMITE
+    if not ok:
+        violazioni += 1
+    print("{:<14} {:8.1f}  {:8.1f}   {}".format(
+        r.Name, d, livello, "OK" if ok else "SUPERA"))
+
+# PASSO 4: verdetto
+print("-" * 46)
+if violazioni == 0:
+    print("ESITO: CONFORME - nessun ricettore oltre il limite")
+else:
+    print("ESITO: NON CONFORME - {} ricettore/i oltre {:.0f} dB(A)".format(
+        violazioni, LIMITE))

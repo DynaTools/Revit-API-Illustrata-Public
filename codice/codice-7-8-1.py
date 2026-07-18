@@ -1,39 +1,34 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.8.1  |  Capitolo 7.8 - Lo spazio di lavoro davanti al quadro
-# Sezione: Passi 1--2 - il quadro e la sua zona
+# Codice 7.8.1  |  Capitolo 7.8 - L'aria, portata e ricambi
+# Sezione: Passi 1--2 - raccogliere il condotto
 
-from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory,
-    XYZ, Outline)
+from Autodesk.Revit.DB import (BuiltInParameter, UnitUtils, UnitTypeId)
+from Autodesk.Revit.UI.Selection import ObjectType
 
-FT_M = 0.3048                      # 1 piede = 0.3048 m
+uidoc = __revit__.ActiveUIDocument
+doc   = uidoc.Document
 
-doc = __revit__.ActiveUIDocument.Document
+# PASSO 1: clicca il condotto nel modello
+ref      = uidoc.Selection.PickObject(ObjectType.Element,
+                                      "Seleziona il condotto")
+condotto = doc.GetElement(ref.ElementId)
 
-# PASSO 1: individua il quadro (prima apparecchiatura elettrica)
-quadro = (FilteredElementCollector(doc)
-          .OfCategory(BuiltInCategory.OST_ElectricalEquipment)
-          .WhereElementIsNotElementType()
-          .FirstElement())
+# PASSO 2: leggi la sezione (rettangolare) e la portata
+p_larg = condotto.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM)
+p_alt  = condotto.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM)
+p_q    = condotto.get_Parameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM)
 
-bb = quadro.get_BoundingBox(None)   # AABB del quadro (in piedi)
-n  = quadro.FacingOrientation       # normale: dove "guarda" il quadro
+# dai piedi ai metri, dai piedi cubi/s ai m3/s (Legge II)
+larg = UnitUtils.ConvertFromInternalUnits(p_larg.AsDouble(), UnitTypeId.Meters)
+alt  = UnitUtils.ConvertFromInternalUnits(p_alt.AsDouble(),  UnitTypeId.Meters)
+Q    = UnitUtils.ConvertFromInternalUnits(p_q.AsDouble(),
+                                          UnitTypeId.CubicMetersPerSecond)
 
-# PASSO 2: costruisci la zona di lavoro davanti alla faccia
-p = 0.70 / FT_M                     # profondita' richiesta (piedi)
-H = 2.00 / FT_M                     # altezza utile da terra (piedi)
+A = larg * alt                       # area della sezione in m2
 
-# la faccia frontale e' il lato del bbox dalla parte della normale:
-# spingo Min e Max in avanti di p*n e impongo z da 0 a H
-avanti = XYZ(n.X * p, n.Y * p, 0.0)
-zmin = XYZ(min(bb.Min.X, bb.Min.X + avanti.X),
-           min(bb.Min.Y, bb.Min.Y + avanti.Y), 0.0)
-zmax = XYZ(max(bb.Max.X, bb.Max.X + avanti.X),
-           max(bb.Max.Y, bb.Max.Y + avanti.Y), H)
-
-print("Quadro: {}".format(quadro.Name))
-print("Orientamento n: ({:.0f}, {:.0f}, {:.0f})".format(n.X, n.Y, n.Z))
-print("Zona min: ({:.2f}, {:.2f}, {:.2f}) m".format(
-    zmin.X*FT_M, zmin.Y*FT_M, zmin.Z*FT_M))
-print("Zona max: ({:.2f}, {:.2f}, {:.2f}) m".format(
-    zmax.X*FT_M, zmax.Y*FT_M, zmax.Z*FT_M))
+print("Condotto DA-01")
+print("Sezione: {:.0f} x {:.0f} mm".format(larg * 1000, alt * 1000))
+print("Area della sezione: {:.3f} m2".format(A))
+print("Portata: {:.3f} m3/s  ({:.0f} L/s = {:.0f} m3/h)".format(
+    Q, Q * 1000, Q * 3600))

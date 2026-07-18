@@ -1,18 +1,36 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.14.3  |  Capitolo 7.14 - Il volume di scavo di una trincea
-# Sezione: Quando la sezione cambia
+# Codice 7.14.3  |  Capitolo 7.14 - Il bilanciamento delle fasi su un quadro
+# Sezione: Bonus - scrivere la fase assegnata sul modello
 
-# tre stazioni lungo i 20 m: profondita' crescente (la canaletta scende)
-def sezione_da(b, h, scarpata):
-    top = b + 2.0 * h * scarpata
-    return [(-b/2.0, 0.0), (b/2.0, 0.0), (top/2.0, h), (-top/2.0, h)]
+from Autodesk.Revit.DB import Transaction
 
-A0 = area_poligono(sezione_da(0.40, 1.00, 0.50))   # stazione a 0 m
-A1 = area_poligono(sezione_da(0.40, 1.20, 0.50))   # stazione a 10 m
-A2 = area_poligono(sezione_da(0.40, 1.40, 0.50))   # stazione a 20 m
+# rifaccio la mappa carico -> fase con LPT, tenendo il riferimento al circuito
+def assegna_circuiti(coppie):       # coppie = lista di (carico_kW, circuito)
+    somme = [0.0, 0.0, 0.0]
+    mappa = []
+    for carico, sis in sorted(coppie, key=lambda p: p[0], reverse=True):
+        k = min(range(3), key=lambda j: somme[j])
+        somme[k] += carico
+        mappa.append((sis, NOMI[k]))
+    return mappa, somme
 
-V = volume_trincea([A0, A1, A2], [10.0, 10.0])     # due tratti da 10 m
+coppie = []
+for sis in circuiti:
+    try:
+        coppie.append((sis.ApparentLoad / 1000.0, sis))
+    except:
+        pass
 
-print("Aree alle stazioni: {:.2f}, {:.2f}, {:.2f} m2".format(A0, A1, A2))
-print("Volume con sezione variabile: {:.2f} m3".format(V))
+mappa, somme = assegna_circuiti(coppie)
+
+t = Transaction(doc, "Bilanciamento fasi QE-01")
+t.Start()
+for sis, fase in mappa:
+    p = sis.LookupParameter("Fase assegnata")
+    if p and not p.IsReadOnly:
+        p.Set(fase)                 # scrive R, S o T sul circuito
+t.Commit()
+
+print("Fase scritta su {} circuiti.".format(len(mappa)))
+print("Somme finali R/S/T: {} kW".format([round(s, 1) for s in somme]))

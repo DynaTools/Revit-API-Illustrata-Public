@@ -1,29 +1,50 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.12.2  |  Capitolo 7.12 - La copertura Wi-Fi
-# Sezione: Passi 3--4 - il livello ricevuto e il verdetto
+# Codice 7.12.2  |  Capitolo 7.12 - Il percorso minimo nella rete
+# Sezione: Passi 1--2 - costruire il grafo dalla rete Revit
 
-P_TX  = 20.0                        # potenza trasmessa (dBm)
-PL0   = 40.0                        # path loss a d0 = 1 m (dB)
-D0    = 1.0                         # distanza di riferimento (m)
-N_ENV = 3.0                         # esponente d'ambiente (interni)
-SOGLIA = -67.0                      # copertura voce/streaming (dBm)
+from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory)
 
-def perdita_percorso(d):
-    return PL0 + 10.0 * N_ENV * math.log10(d / D0)
+FT_M = 0.3048                      # 1 piede = 0.3048 m
+EPS  = 0.01                        # tolleranza di prossimita' (m)
 
-def livello_ricevuto(ap_pt, p, caster, tabella):
-    d = ap_pt.DistanceTo(p) * FT_M  # distanza in metri
-    pl = perdita_percorso(d)
-    att = attenuazione_ostacoli(ap_pt, p, caster, tabella)
-    return P_TX - pl - att, d, pl, att
+doc = __revit__.ActiveUIDocument.Document
 
-# PASSO 3-4: due punti da verificare (in piedi)
-punti = {"P1": XYZ(6.80/FT_M, -2.20/FT_M, 2.50/FT_M),    # 8 m, 1 cartongesso
-         "P2": XYZ(14.00/FT_M, -4.80/FT_M, 2.50/FT_M)}   # 15 m, oltre cemento
+# PASSO 1: raccogli i tratti della rete (canalette + cavidotti)
+cats = [BuiltInCategory.OST_Conduit, BuiltInCategory.OST_CableTray]
+tratti = []
+for cat in cats:
+    tratti += list(FilteredElementCollector(doc).OfCategory(cat)
+                   .WhereElementIsNotElementType())
 
-for nome, p in punti.items():
-    prx, d, pl, att = livello_ricevuto(origine, p, caster, ATT)
-    esito = "COPERTO" if prx >= SOGLIA else "OMBRA (non coperto)"
-    print("{}: d={:.0f} m  PL={:.1f} dB  att={:.1f} dB  "
-          "Prx={:.1f} dBm -> {}".format(nome, d, pl, att, prx, esito))
+# estremi e lunghezza di ogni tratto (in metri)
+segmenti = []
+for el in tratti:
+    k = el.Location.Curve
+    p0, p1 = k.GetEndPoint(0), k.GetEndPoint(1)
+    L = k.Length * FT_M
+    segmenti.append((el, p0, p1, L))
+
+# PASSO 2: nodi per prossimita' degli estremi (DistanceTo < EPS)
+nodi = []                          # lista dei punti-rappresentante dei nodi
+def id_nodo(p):                    # indice del nodo cui appartiene il punto p
+    for i, q in enumerate(nodi):
+        if p.DistanceTo(q) * FT_M < EPS:   # prossimita': Cap. 7.11
+            return i
+    nodi.append(p)                 # nuovo nodo
+    return len(nodi) - 1
+
+# costruisci la lista di adiacenza (grafo non orientato, pesi in metri)
+adj = {}
+def aggiungi(u, v, w):
+    adj.setdefault(u, []).append((v, w))
+    adj.setdefault(v, []).append((u, w))
+
+for el, p0, p1, L in segmenti:
+    a, b = id_nodo(p0), id_nodo(p1)
+    if a != b:
+        aggiungi(a, b, L)
+
+print("Tratti letti: {}".format(len(segmenti)))
+print("Nodi (raccordi): {}".format(len(nodi)))
+print("Archi nel grafo: {}".format(sum(len(v) for v in adj.values()) // 2))

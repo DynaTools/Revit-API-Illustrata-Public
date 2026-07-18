@@ -1,41 +1,42 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.18.1  |  Capitolo 7.18 - Le unità di scarico e il diametro della colonna
-# Sezione: Passi 1--2 - apparecchi e somma delle Unità di Scarico
+# Codice 7.18.1  |  Capitolo 7.18 - Il baricentro di un insieme di elementi
+# Sezione: Passi 1--3 - leggere le utenze e mediare
 
-import math
-from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory)
+from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory,
+    XYZ)
+
+FT_M = 0.3048                      # 1 piede = 0.3048 m
 
 doc = __revit__.ActiveUIDocument.Document
 
-# tabella di ripiego: Unita' di Scarico tipiche (UNI EN 12056-2)
-DU_TIPICHE = {"lavabo": 0.5, "bidet": 0.5, "doccia": 0.6, "wc": 2.0}
+# media pesata di una lista di (posizione XYZ, peso): G = somma(w*P)/somma(w)
+def baricentro(coppie):
+    sw = 0.0
+    sx = 0.0
+    sy = 0.0
+    for P, w in coppie:
+        sw += w
+        sx += w * P.X           # contributo pesato sulla x
+        sy += w * P.Y           # contributo pesato sulla y
+    return XYZ(sx / sw, sy / sw, 0.0)
 
-def du_tipica(nome):
-    n = nome.lower()
-    for chiave, val in DU_TIPICHE.items():
-        if chiave in n:
-            return val
-    return 0.0
+# PASSO 1-2: raccogli le utenze e leggi posizione + peso (carico kW)
+# (qui le quattro utenze dell'esempio, gia' in metri, col carico come peso)
+utenze = [
+    (XYZ(0.0, 0.0, 0.0), 2.0),     # P1
+    (XYZ(8.0, 0.0, 0.0), 1.0),     # P2
+    (XYZ(8.0, 6.0, 0.0), 3.0),     # P3 (la piu' carica)
+    (XYZ(0.0, 6.0, 0.0), 2.0),     # P4
+]
 
-# PASSO 1: raccogli gli apparecchi sanitari del modello
-apparecchi = (FilteredElementCollector(doc)
-              .OfCategory(BuiltInCategory.OST_PlumbingFixtures)
-              .WhereElementIsNotElementType()
-              .ToElements())
+# PASSO 3: baricentro semplice (pesi tutti = 1) e pesato (pesi = carico)
+G_semplice = baricentro([(P, 1.0) for P, w in utenze])
+G_pesato   = baricentro(utenze)
 
-# PASSO 2: leggi e somma le Unita' di Scarico
-somma_du = 0.0
-for ap in apparecchi:
-    nome = ap.Name
-    par = ap.LookupParameter("DU")          # parametro condiviso, se c'e'
-    if par and par.HasValue:
-        du = par.AsDouble()
-    else:
-        du = du_tipica(nome)                 # ripiego sui valori tipici
-    somma_du += du
-    print("{:>22}: DU = {:.1f}".format(nome, du))
-
-print("---")
-print("Apparecchi: {}".format(len(apparecchi)))
-print("Somma DU: {:.1f}".format(somma_du))
+W = sum(w for P, w in utenze)
+print("Utenze: {}   carico totale: {:.0f} kW".format(len(utenze), W))
+print("Baricentro semplice: ({:.2f}, {:.2f}) m".format(
+    G_semplice.X, G_semplice.Y))
+print("Baricentro pesato:   ({:.2f}, {:.2f}) m".format(
+    G_pesato.X, G_pesato.Y))

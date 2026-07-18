@@ -1,19 +1,28 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.7.2  |  Capitolo 7.7 - La distribuzione delle prese
-# Sezione: Passo 3 - i punti sull'asse
+# Codice 7.7.2  |  Capitolo 7.7 - Lo spazio da difendere
+# Sezione: Passo 3 - chi interseca la zona
 
-from Autodesk.Revit.DB import XYZ
+from Autodesk.Revit.DB import (BoundingBoxIntersectsFilter,
+    ElementId)
+from System.Collections.Generic import List
 
-# PASSO 3: valuta i punti P(t_i) e alzali all'altezza di montaggio
-punti = []
-for i in range(N):
-    t  = (i + 0.5) / N              # parametro normalizzato t_i
-    pt = curve.Evaluate(t, True)    # punto sull'asse (XYZ in piedi)
-    pt = XYZ(pt.X, pt.Y, pt.Z + h / FT_M)   # alza a h (h in metri -> piedi)
-    punti.append(pt)
-    print("presa {}: t={:.3f}  d={:.3f} m  ({:.2f}, {:.2f}) m".format(
-        i, t, t * L, pt.X * FT_M, pt.Y * FT_M))
+# PASSO 3: filtro spaziale AABB-AABB sulla zona
+filt = BoundingBoxIntersectsFilter(Outline(zmin, zmax))
 
-print("---")
-print("Punti generati: {}".format(len(punti)))
+esclusi = List[ElementId]([quadro.Id])     # non l'intruso: e' il quadro stesso
+
+intrusi = (FilteredElementCollector(doc)
+           .WherePasses(filt)
+           .Excluding(esclusi)
+           .WhereElementIsNotElementType()
+           .ToElements())
+
+# scarto il muro retrostante: non e' un ostacolo "davanti"
+intrusi = [e for e in intrusi
+           if e.Category and e.Category.Id.IntegerValue
+              != int(BuiltInCategory.OST_Walls)]
+
+print("Elementi che invadono la zona: {}".format(len(intrusi)))
+for e in intrusi:
+    print("  - {} ({})".format(e.Category.Name, e.Name))

@@ -1,35 +1,39 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.19.1  |  Capitolo 7.19 - I ricambi d'aria e il numero di diffusori
-# Sezione: Passi 1--3 - volume, portata e diffusori
+# Codice 7.19.1  |  Capitolo 7.19 - La distanza di sicurezza da una sorgente di rumore
+# Sezione: Passi 1--2 - la sorgente e la distanza di sicurezza
 
 import math
-from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory,
-    SpatialElement)
+from Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory
 
 FT_M = 0.3048                      # 1 piede = 0.3048 m
-FT3_M3 = FT_M ** 3                 # 1 piede cubo = 0.3048^3 m3
 
 doc = __revit__.ActiveUIDocument.Document
 
-# PASSO 1: leggi il volume della prima stanza (Room)
-stanza = (FilteredElementCollector(doc)
-          .OfCategory(BuiltInCategory.OST_Rooms)
-          .WhereElementIsNotElementType()
-          .FirstElement())
+# livello di pressione sonora a distanza d (m) da una sorgente puntiforme
+def Lp(Lw, d):
+    return Lw - 20.0 * math.log10(d) - 11.0   # campo libero sferico
 
-V = stanza.Volume * FT3_M3         # volume in m3 (Room.Volume e' in piedi cubi)
+# distanza di sicurezza: dove Lp scende al limite (formula invertita)
+def distanza_sicurezza(Lw, limite):
+    return 10.0 ** ((Lw - 11.0 - limite) / 20.0)
 
-# PASSO 2: la portata richiesta dai ricambi della norma
-n = 2.0                            # ricambi orari (regola pratica; UNI 10339 ragiona per persona)
-Q = n * V                          # portata richiesta in m3/h
+# PASSO 1: individua la sorgente (prima apparecchiatura meccanica)
+sorgente = (FilteredElementCollector(doc)
+            .OfCategory(BuiltInCategory.OST_MechanicalEquipment)
+            .WhereElementIsNotElementType()
+            .FirstElement())
 
-# PASSO 3: il numero di diffusori
-q_diff = 72.0                      # portata per diffusore (m3/h)
-N_diff = int(math.ceil(Q / q_diff))
+origine = sorgente.Location.Point  # posizione della macchina (piedi)
 
-print("Stanza: {}".format(stanza.Name))
-print("Volume V: {:.2f} m3".format(V))
-print("Ricambi n: {:.1f} vol/h".format(n))
-print("Portata Q = n*V: {:.1f} m3/h".format(Q))
-print("Diffusori = ceil({:.1f} / {:.0f}) = {}".format(Q, q_diff, N_diff))
+LW    = 85.0                       # potenza sonora della macchina (dB, da targa)
+LIMITE = 55.0                      # limite diurno zona residenziale (dB(A))
+
+# PASSO 2: la distanza di sicurezza
+d_sic = distanza_sicurezza(LW, LIMITE)
+
+print("Sorgente: {}".format(sorgente.Name))
+print("Potenza sonora Lw: {:.0f} dB".format(LW))
+print("Limite di immissione: {:.0f} dB(A)".format(LIMITE))
+print("Distanza di sicurezza: {:.1f} m".format(d_sic))
+print("Verifica Lp a {:.1f} m: {:.1f} dB".format(d_sic, Lp(LW, d_sic)))

@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.17.3  |  Capitolo 7.17 - Le pendenze: scarico e rampa
-# Sezione: Scarico o rampa? Due casi a confronto
+# Codice 7.17.3  |  Capitolo 7.17 - Il conteggio degli sprinkler su una griglia
+# Sezione: Lo stesso conteggio - le lampade di emergenza
 
-# stesso strumento, caso RAMPA: dz=0,80 m su L=12,00 m
-# (qui i valori a scopo di confronto; nel modello verrebbero dal click)
-p_rampa = 0.80 / 12.00 * 100.0     # = 6.6667 %
+import math
 
-print("--- RAMPA RP-01 ---")
-verdetto(p_rampa, 8.0, e_minimo=False)      # massimo di legge
-if p_rampa > 5.0:
-    print("NOTA: sopra il 5% preferibile (conforme ma faticosa)")
+L = 30.0                           # lunghezza corridoio (m)
+PASSO_MAX = 6.0                    # passo massimo fra lampade (m)
+
+intervalli = int(math.ceil(L / PASSO_MAX))
+n_lampade  = intervalli + 1        # nodi = intervalli + 1 (estremi inclusi)
+passo_reale = L / intervalli
+
+print("Corridoio: {:.1f} m  (passo max {:.1f} m)".format(L, PASSO_MAX))
+print("Lampade di emergenza: {}".format(n_lampade))
+print("Passo reale: {:.2f} m".format(passo_reale))

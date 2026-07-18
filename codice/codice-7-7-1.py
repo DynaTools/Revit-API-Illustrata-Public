@@ -1,30 +1,39 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.7.1  |  Capitolo 7.7 - La distribuzione delle prese
-# Sezione: Passi 1--2 - il muro e i parametri
+# Codice 7.7.1  |  Capitolo 7.7 - Lo spazio da difendere
+# Sezione: Passi 1--2 - il quadro e la sua zona
 
-import math
-from Autodesk.Revit.UI.Selection import ObjectType
+from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory,
+    XYZ, Outline)
 
-FT_M = 0.3048                       # 1 piede = 0.3048 m
+FT_M = 0.3048                      # 1 piede = 0.3048 m
 
-uidoc = __revit__.ActiveUIDocument
-doc   = uidoc.Document
+doc = __revit__.ActiveUIDocument.Document
 
-# PASSO 1: clicca il muro e leggi il suo asse
-ref   = uidoc.Selection.PickObject(ObjectType.Element, "Seleziona il muro")
-wall  = doc.GetElement(ref.ElementId)
-curve = wall.Location.Curve         # asse del muro (centerline)
-L     = curve.Length * FT_M         # lunghezza dell'asse in metri
+# PASSO 1: individua il quadro (prima apparecchiatura elettrica)
+quadro = (FilteredElementCollector(doc)
+          .OfCategory(BuiltInCategory.OST_ElectricalEquipment)
+          .WhereElementIsNotElementType()
+          .FirstElement())
 
-# PASSO 2: numero di prese e parametri normalizzati t_i
-passo_max = 1.50                    # passo massimo (m)
-h         = 0.30                    # altezza di montaggio (m)
+bb = quadro.get_BoundingBox(None)   # AABB del quadro (in piedi)
+n  = quadro.FacingOrientation       # normale: dove "guarda" il quadro
 
-N = int(math.ceil(L / passo_max))   # numero di intervalli (e di prese)
-s = L / N                           # passo reale (m)
+# PASSO 2: costruisci la zona di lavoro davanti alla faccia
+p = 0.70 / FT_M                     # profondita' richiesta (piedi)
+H = 2.00 / FT_M                     # altezza utile da terra (piedi)
 
-print("Muro lungo: {:.2f} m".format(L))
-print("Passo massimo: {:.2f} m  ->  N = {} prese".format(passo_max, N))
-print("Passo reale s = L/N: {:.2f} m".format(s))
-print("Margine ai bordi (s/2): {:.3f} m".format(s / 2.0))
+# la faccia frontale e' il lato del bbox dalla parte della normale:
+# spingo Min e Max in avanti di p*n e impongo z da 0 a H
+avanti = XYZ(n.X * p, n.Y * p, 0.0)
+zmin = XYZ(min(bb.Min.X, bb.Min.X + avanti.X),
+           min(bb.Min.Y, bb.Min.Y + avanti.Y), 0.0)
+zmax = XYZ(max(bb.Max.X, bb.Max.X + avanti.X),
+           max(bb.Max.Y, bb.Max.Y + avanti.Y), H)
+
+print("Quadro: {}".format(quadro.Name))
+print("Orientamento n: ({:.0f}, {:.0f}, {:.0f})".format(n.X, n.Y, n.Z))
+print("Zona min: ({:.2f}, {:.2f}, {:.2f}) m".format(
+    zmin.X*FT_M, zmin.Y*FT_M, zmin.Z*FT_M))
+print("Zona max: ({:.2f}, {:.2f}, {:.2f}) m".format(
+    zmax.X*FT_M, zmax.Y*FT_M, zmax.Z*FT_M))

@@ -1,33 +1,25 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.16.2  |  Capitolo 7.16 - Il bilanciamento delle fasi su un quadro
-# Sezione: Passo 4 - il confronto: sequenziale contro LPT
+# Codice 7.16.2  |  Capitolo 7.16 - Le unità di scarico e il diametro della colonna
+# Sezione: Passi 3--4 - la portata e il diametro
 
-# PASSO 4: confronto NAIVE (round-robin, senza ordinare) contro LPT
+# PASSO 3: portata di acque reflue  Qww = K * sqrt(somma_du)
+K   = 0.5                              # uso intermittente (abitazioni)
+Qww = K * math.sqrt(somma_du)          # L/s
 
-# naive: assegna in sequenza R,S,T,R,S,T... cosi' come capitano i carichi
-def assegna_naive(carichi):
-    fasi = [[], [], []]
-    for i, c in enumerate(carichi):
-        fasi[i % 3].append(c)
-    return fasi
+# PASSO 4: scegli il DN dalla tabella di soglie (UNI EN 12056-2)
+def scegli_dn(q):
+    if q <= 0.8:
+        return "DN50"
+    elif q <= 1.5:
+        return "DN75"
+    else:
+        return "DN100"
 
-fasi_n = assegna_naive(carichi)
-sq_n, somme_n = squilibrio(fasi_n)
+DN = scegli_dn(Qww)
 
-fasi_l = assegna_lpt(carichi)
-sq_l, somme_l = squilibrio(fasi_l)
-
-SOGLIA = 15.0                      # squilibrio massimo ammesso (%)
-
-print("NAIVE  somme R/S/T: {} kW".format([round(s, 1) for s in somme_n]))
-print("NAIVE  squilibrio: {:.1f}%".format(sq_n))
+print("Somma DU: {:.1f}".format(somma_du))
+print("Portata Qww = {:.1f} * sqrt({:.1f}) = {:.2f} L/s".format(
+    K, somma_du, Qww))
 print("---")
-print("LPT    somme R/S/T: {} kW".format([round(s, 1) for s in somme_l]))
-print("LPT    squilibrio: {:.1f}%".format(sq_l))
-print("---")
-print("Soglia ammessa: {:.0f}%".format(SOGLIA))
-if sq_l <= SOGLIA:
-    print("ESITO: CONFORME con LPT (margine {:.1f} punti)".format(SOGLIA - sq_l))
-else:
-    print("ESITO: NON CONFORME - fasi ancora troppo squilibrate")
+print("Diametro della colonna: {}".format(DN))

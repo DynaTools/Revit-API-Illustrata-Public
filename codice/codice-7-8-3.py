@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.8.3  |  Capitolo 7.8 - Lo spazio di lavoro davanti al quadro
-# Sezione: Passo 4 - riportare le violazioni
+# Codice 7.8.3  |  Capitolo 7.8 - L'aria, portata e ricambi
+# Sezione: Passo 4 - verificare i limiti di comfort
 
-# PASSO 4: verdetto
-print("Quadro {}: spazio di lavoro {:.2f} m (CEI 64-8)".format(
-    quadro.Name, 0.70))
-print("---")
-if len(intrusi) == 0:
-    print("ESITO: ZONA LIBERA - nessuna violazione")
+# PASSO 4: verifica contro la fascia raccomandata (ramo derivato)
+V_MIN = 3.0      # m/s - sotto: canale sovradimensionato
+V_MAX = 5.0      # m/s - sopra: rumore e perdite di carico
+
+if v < V_MIN:
+    esito = "SOTTO LA FASCIA - canale sovradimensionato"
+elif v > V_MAX:
+    esito = "SOPRA LA FASCIA - rischio rumore e perdite"
 else:
-    print("ESITO: ZONA VIOLATA - {} intruso/i".format(len(intrusi)))
-    for e in intrusi:
-        print("  violazione: {} '{}'".format(e.Category.Name, e.Name))
+    esito = "NELLA FASCIA - OK"
+
+print("Velocita': {:.2f} m/s   (fascia consigliata {:.0f}-{:.0f} m/s)".format(
+    v, V_MIN, V_MAX))
+print("ESITO: {}".format(esito))

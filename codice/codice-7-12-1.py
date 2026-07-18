@@ -1,49 +1,46 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.12.1  |  Capitolo 7.12 - La copertura Wi-Fi
-# Sezione: Passi 1--2 - l'antenna e i muri sul raggio
+# Codice 7.12.1  |  Capitolo 7.12 - Il percorso minimo nella rete
+# Sezione: Passo 3 - Dijkstra in Python
 
-import math
-from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory,
-    XYZ, View3D, ReferenceIntersector, FindReferenceTarget)
+import heapq
 
-FT_M = 0.3048                       # 1 piede = 0.3048 m
+# Dijkstra su un grafo pesato.
+# adj[u] = lista di (v, peso) per ogni arco u->v (qui non orientato).
+def dijkstra(adj, sorg, dest):
+    dist = dict((n, float("inf")) for n in adj)   # migliore distanza nota
+    prev = dict((n, None) for n in adj)            # predecessore nel cammino
+    dist[sorg] = 0.0
+    pq = [(0.0, sorg)]                             # coda di priorita'
+    while pq:
+        d, u = heapq.heappop(pq)                   # nodo aperto piu' vicino
+        if d > dist[u]:
+            continue                               # voce vecchia: scartala
+        if u == dest:
+            break                                  # ottimo per dest gia' certo
+        for v, w in adj[u]:                        # rilassa i vicini di u
+            nd = d + w                             # dist(u) + w(u,v)
+            if nd < dist[v]:                       # strada migliore per v?
+                dist[v] = nd
+                prev[v] = u
+                heapq.heappush(pq, (nd, v))
+    # ricostruzione del cammino da dest a ritroso fino a sorg
+    cammino, n = [], dest
+    while n is not None:
+        cammino.append(n)
+        n = prev[n]
+    cammino.reverse()
+    return dist[dest], cammino
 
-doc = __revit__.ActiveUIDocument.Document
+# la rete della figura (nodo: lista di (vicino, lunghezza in metri))
+adj = {
+    "A": [("C", 6.0), ("D", 4.0)],
+    "C": [("A", 6.0), ("B", 12.0), ("D", 5.0)],
+    "B": [("C", 12.0), ("E", 4.0)],
+    "D": [("A", 4.0), ("E", 7.0), ("C", 5.0)],
+    "E": [("D", 7.0), ("B", 4.0)],
+}
 
-# tabella materiale -> attenuazione (dB) a 2.4 GHz
-ATT = {"cartongesso": 3.0, "vetro": 2.0, "mattone": 6.0, "cemento": 12.0}
-
-# PASSO 1: individua l'access point e prepara il ray caster
-ap = (FilteredElementCollector(doc)
-      .OfCategory(BuiltInCategory.OST_CommunicationDevices)
-      .WhereElementIsNotElementType()
-      .FirstElement())
-
-origine = ap.Location.Point          # posizione dell'antenna (piedi)
-
-vista3d = (FilteredElementCollector(doc).OfClass(View3D)
-           .WhereElementIsNotElementType().FirstElement())
-caster = ReferenceIntersector(vista3d)
-caster.TargetType = FindReferenceTarget.Element
-
-# PASSO 2: conta i muri attraversati dal raggio AP -> punto
-def attenuazione_ostacoli(ap_pt, p, caster, tabella):
-    direzione = (p - ap_pt).Normalize()
-    colpiti = caster.Find(ap_pt, direzione)
-    dmax = ap_pt.DistanceTo(p)        # non guardare oltre il punto
-    perdita = 0.0
-    for ref in colpiti:
-        if ref.Proximity > dmax:
-            continue
-        muro = doc.GetElement(ref.GetReference())
-        nome = (muro.Name or "").lower()
-        for chiave, db in tabella.items():
-            if chiave in nome:
-                perdita += db
-                break
-    return perdita
-
-print("Access point: {}".format(ap.Name))
-print("Posizione AP: ({:.2f}, {:.2f}, {:.2f}) m".format(
-    origine.X*FT_M, origine.Y*FT_M, origine.Z*FT_M))
+lung, cammino = dijkstra(adj, "A", "B")
+print("Percorso minimo: {}".format(" -> ".join(cammino)))
+print("Lunghezza cavo: {:.1f} m".format(lung))

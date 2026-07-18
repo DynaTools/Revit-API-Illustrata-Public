@@ -1,21 +1,31 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.10.3  |  Capitolo 7.10 - La pressione dell'acqua fredda in bagno
-# Sezione: Passo 4 - verificare il minimo di ognuno
+# Codice 7.10.3  |  Capitolo 7.10 - La distanza minima fra due percorsi
+# Sezione: Bonus - il clash di prossimità su tutto il modello
 
-# PASSO 4: verifica apparecchio per apparecchio
-print("--- VERIFICA BAGNO BA-01 ---")
-tutti_ok = True
-for nome, z_app, battente, p_res, p_min in risultati:
-    ok = p_res >= p_min
-    tutti_ok = tutti_ok and ok
-    esito = "OK" if ok else "INSUFFICIENTE"
-    print("{:<20} {:.2f} mca  (min {:.2f})  {}".format(
-        nome, p_res, p_min, esito))
+from Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory
 
-print("---")
-if tutti_ok:
-    print("ESITO: bagno CONFORME - tutti gli apparecchi alimentati")
-else:
-    print("ESITO: NON CONFORME - serve piu' battente (serbatoio piu'")
-    print("       alto) o una pompa di rilancio / autoclave")
+# raccolgo i percorsi MEP (passerelle, tubi, cavidotti, condotti)
+cats = [BuiltInCategory.OST_CableTray, BuiltInCategory.OST_PipeCurves,
+        BuiltInCategory.OST_Conduit,   BuiltInCategory.OST_DuctCurves]
+perc = []
+for cat in cats:
+    perc += list(FilteredElementCollector(doc).OfCategory(cat)
+                 .WhereElementIsNotElementType())
+
+FRANCO = 0.20                      # m
+sotto = []
+for i in range(len(perc)):
+    for j in range(i + 1, len(perc)):
+        ki = perc[i].Location.Curve
+        kj = perc[j].Location.Curve
+        C1, C2, s, t = distanza_segmenti(
+            ki.GetEndPoint(0), ki.GetEndPoint(1),
+            kj.GetEndPoint(0), kj.GetEndPoint(1))
+        dij = C1.DistanceTo(C2) * FT_M
+        if dij < FRANCO:
+            sotto.append((perc[i].Name, perc[j].Name, dij))
+
+print("Coppie sotto il franco di {:.2f} m: {}".format(FRANCO, len(sotto)))
+for na, nb, dij in sotto:
+    print("  {} <-> {}: {:.2f} m".format(na, nb, dij))

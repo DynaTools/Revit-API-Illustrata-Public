@@ -1,25 +1,28 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.18.2  |  Capitolo 7.18 - Le unità di scarico e il diametro della colonna
-# Sezione: Passi 3--4 - la portata e il diametro
+# Codice 7.18.2  |  Capitolo 7.18 - Il baricentro di un insieme di elementi
+# Sezione: Passo 4 - posizione e carico dal modello reale
 
-# PASSO 3: portata di acque reflue  Qww = K * sqrt(somma_du)
-K   = 0.5                              # uso intermittente (abitazioni)
-Qww = K * math.sqrt(somma_du)          # L/s
+# PASSO 4: posizione e peso letti dagli elementi reali del modello
+def posizione(el):
+    loc = el.Location
+    if hasattr(loc, "Point"):              # LocationPoint (prese, apparecchi)
+        return loc.Point
+    k = loc.Curve                          # LocationCurve (tubi, passerelle)
+    return k.Evaluate(0.5, True)           # punto medio della curva
 
-# PASSO 4: scegli il DN dalla tabella di soglie (UNI EN 12056-2)
-def scegli_dn(q):
-    if q <= 0.8:
-        return "DN50"
-    elif q <= 1.5:
-        return "DN75"
-    else:
-        return "DN100"
+def peso(el, nome_param, default=1.0):
+    p = el.LookupParameter(nome_param)     # es. "Carico apparente" (kW), o portata
+    return p.AsDouble() if p else default
 
-DN = scegli_dn(Qww)
+# raccolgo le utenze (qui: apparecchi elettrici) e costruisco le coppie
+elementi = (FilteredElementCollector(doc)
+            .OfCategory(BuiltInCategory.OST_ElectricalFixtures)
+            .WhereElementIsNotElementType()
+            .ToElements())
 
-print("Somma DU: {:.1f}".format(somma_du))
-print("Portata Qww = {:.1f} * sqrt({:.1f}) = {:.2f} L/s".format(
-    K, somma_du, Qww))
-print("---")
-print("Diametro della colonna: {}".format(DN))
+coppie = [(posizione(e), peso(e, "Carico apparente")) for e in elementi]
+G = baricentro(coppie)                     # in piedi -> converto in metri
+
+print("Utenze trovate: {}".format(len(coppie)))
+print("Baricentro pesato: ({:.2f}, {:.2f}) m".format(G.X*FT_M, G.Y*FT_M))

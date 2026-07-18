@@ -1,30 +1,35 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.8.4  |  Capitolo 7.8 - Lo spazio di lavoro davanti al quadro
-# Sezione: Bonus - disegnare la zona nel modello
+# Codice 7.8.4  |  Capitolo 7.8 - L'aria, portata e ricambi
+# Sezione: Dalla velocità ai ricambi d'aria
 
-from Autodesk.Revit.DB import (Transaction, DirectShape, ElementId,
-    BuiltInCategory, GeometryCreationUtilities, CurveLoop, Line)
+import math
+from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory,
+    SpatialElement)
 
-# rettangolo di base della zona (a z=0) -> estruso fino a H
-P0 = XYZ(zmin.X, zmin.Y, 0.0)
-P1 = XYZ(zmax.X, zmin.Y, 0.0)
-P2 = XYZ(zmax.X, zmax.Y, 0.0)
-P3 = XYZ(zmin.X, zmax.Y, 0.0)
+FT_M = 0.3048                      # 1 piede = 0.3048 m
+FT3_M3 = FT_M ** 3                 # 1 piede cubo = 0.3048^3 m3
 
-loop = CurveLoop()
-for a, b in [(P0, P1), (P1, P2), (P2, P3), (P3, P0)]:
-    loop.Append(Line.CreateBound(a, b))
+doc = __revit__.ActiveUIDocument.Document
 
-solido = GeometryCreationUtilities.CreateExtrusionGeometry(
-    [loop], XYZ.BasisZ, H)            # estrudo verso l'alto fino ad H
+# PASSO 1: leggi il volume della prima stanza (Room)
+stanza = (FilteredElementCollector(doc)
+          .OfCategory(BuiltInCategory.OST_Rooms)
+          .WhereElementIsNotElementType()
+          .FirstElement())
 
-t = Transaction(doc, "Zona di lavoro QE-01")
-t.Start()
-ds = DirectShape.CreateElement(
-    doc, ElementId(BuiltInCategory.OST_GenericModel))
-ds.SetShape([solido])
-ds.Name = "Zona lavoro QE-01"
-t.Commit()
+V = stanza.Volume * FT3_M3         # volume in m3 (Room.Volume e' in piedi cubi)
 
-print("Creata la zona di lavoro come DirectShape nel modello.")
+# PASSO 2: la portata richiesta dai ricambi della norma
+n = 2.0                            # ricambi orari (regola pratica; UNI 10339 ragiona per persona)
+Q = n * V                          # portata richiesta in m3/h
+
+# PASSO 3: il numero di diffusori
+q_diff = 72.0                      # portata per diffusore (m3/h)
+N_diff = int(math.ceil(Q / q_diff))
+
+print("Stanza: {}".format(stanza.Name))
+print("Volume V: {:.2f} m3".format(V))
+print("Ricambi n: {:.1f} vol/h".format(n))
+print("Portata Q = n*V: {:.1f} m3/h".format(Q))
+print("Diffusori = ceil({:.1f} / {:.0f}) = {}".format(Q, q_diff, N_diff))

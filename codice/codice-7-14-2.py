@@ -1,32 +1,33 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.14.2  |  Capitolo 7.14 - Il volume di scavo di una trincea
-# Sezione: Passi 3--4 - il volume lungo la trincea
+# Codice 7.14.2  |  Capitolo 7.14 - Il bilanciamento delle fasi su un quadro
+# Sezione: Passo 4 - il confronto: sequenziale contro LPT
 
-from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory)
+# PASSO 4: confronto NAIVE (round-robin, senza ordinare) contro LPT
 
-FT_M = 0.3048                      # 1 piede = 0.3048 m
+# naive: assegna in sequenza R,S,T,R,S,T... cosi' come capitano i carichi
+def assegna_naive(carichi):
+    fasi = [[], [], []]
+    for i, c in enumerate(carichi):
+        fasi[i % 3].append(c)
+    return fasi
 
-doc = __revit__.ActiveUIDocument.Document
+fasi_n = assegna_naive(carichi)
+sq_n, somme_n = squilibrio(fasi_n)
 
-# PASSO 4: volume per stazioni (regola trapezoidale; A*L se sezione costante)
-def volume_trincea(aree, lunghezze):
-    V = 0.0
-    for i in range(len(lunghezze)):
-        V += (aree[i] + aree[i + 1]) / 2.0 * lunghezze[i]   # area media * tratto
-    return V
+fasi_l = assegna_lpt(carichi)
+sq_l, somme_l = squilibrio(fasi_l)
 
-# PASSO 3: leggi il percorso della canaletta interrata e la sua lunghezza
-cana = (FilteredElementCollector(doc)
-        .OfCategory(BuiltInCategory.OST_Conduit)
-        .WhereElementIsNotElementType()
-        .FirstElement())
-L = cana.Location.Curve.Length * FT_M      # lunghezza del percorso (m)
+SOGLIA = 15.0                      # squilibrio massimo ammesso (%)
 
-# sezione costante per tutta la trincea: due stazioni con la stessa area A
-V = volume_trincea([A, A], [L])            # = A * L
-
-print("Canaletta: {}".format(cana.Name))
-print("Lunghezza trincea: {:.2f} m".format(L))
-print("Area sezione: {:.2f} m2".format(A))
-print("Volume di sterro: {:.2f} m3".format(V))
+print("NAIVE  somme R/S/T: {} kW".format([round(s, 1) for s in somme_n]))
+print("NAIVE  squilibrio: {:.1f}%".format(sq_n))
+print("---")
+print("LPT    somme R/S/T: {} kW".format([round(s, 1) for s in somme_l]))
+print("LPT    squilibrio: {:.1f}%".format(sq_l))
+print("---")
+print("Soglia ammessa: {:.0f}%".format(SOGLIA))
+if sq_l <= SOGLIA:
+    print("ESITO: CONFORME con LPT (margine {:.1f} punti)".format(SOGLIA - sq_l))
+else:
+    print("ESITO: NON CONFORME - fasi ancora troppo squilibrate")

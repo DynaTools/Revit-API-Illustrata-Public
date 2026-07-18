@@ -1,34 +1,44 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.9.1  |  Capitolo 7.9 - La portata d'aria nei condotti
-# Sezione: Passi 1--2 - raccogliere il condotto
+# Codice 7.9.1  |  Capitolo 7.9 - La pressione dell'acqua fredda in bagno
+# Sezione: Passi 1--2 - leggere le quote dal modello
 
-from Autodesk.Revit.DB import (BuiltInParameter, UnitUtils, UnitTypeId)
-from Autodesk.Revit.UI.Selection import ObjectType
+from Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory
+
+FT_M = 0.3048                 # 1 piede = 0.3048 m
 
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
 
-# PASSO 1: clicca il condotto nel modello
-ref      = uidoc.Selection.PickObject(ObjectType.Element,
-                                      "Seleziona il condotto")
-condotto = doc.GetElement(ref.ElementId)
+# Quota del pelo libero del serbatoio (dato di progetto, in metri)
+Z_SERBATOIO = 9.60
 
-# PASSO 2: leggi la sezione (rettangolare) e la portata
-p_larg = condotto.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM)
-p_alt  = condotto.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM)
-p_q    = condotto.get_Parameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM)
+# Perdite di carico stimate dal serbatoio al bagno (mca):
+#   - lungo la colonna e la distribuzione orizzontale
+PERDITA_DISTRIB = 3.0     # mca
+#   - nel breve stacco verso ogni apparecchio
+PERDITA_STACCO  = 1.0     # mca
 
-# dai piedi ai metri, dai piedi cubi/s ai m3/s (Legge II)
-larg = UnitUtils.ConvertFromInternalUnits(p_larg.AsDouble(), UnitTypeId.Meters)
-alt  = UnitUtils.ConvertFromInternalUnits(p_alt.AsDouble(),  UnitTypeId.Meters)
-Q    = UnitUtils.ConvertFromInternalUnits(p_q.AsDouble(),
-                                          UnitTypeId.CubicMetersPerSecond)
+# 50 kPa ~ 5.1 mca per tutti gli apparecchi domestici (UNI 9182)
+P_MIN = 50.0 / 9.81       # 50 kPa convertiti in mca -> ~5.10 mca
 
-A = larg * alt                       # area della sezione in m2
+# Leggi dal modello gli apparecchi del bagno e la loro quota d'uso:
+# la quota d'uso e' la Z del punto d'inserimento (Location.Point), in piedi.
+quote = {}
+sanitari = FilteredElementCollector(doc)\
+    .OfCategory(BuiltInCategory.OST_PlumbingFixtures)\
+    .WhereElementIsNotElementType()
+for el in sanitari:
+    quote[el.Name] = el.Location.Point.Z * FT_M   # quota d'uso in metri
 
-print("Condotto DA-01")
-print("Sezione: {:.0f} x {:.0f} mm".format(larg * 1000, alt * 1000))
-print("Area della sezione: {:.3f} m2".format(A))
-print("Portata: {:.3f} m3/s  ({:.0f} L/s = {:.0f} m3/h)".format(
-    Q, Q * 1000, Q * 3600))
+# Apparecchi del bagno: (nome, quota d'uso in m, pressione minima in mca)
+apparecchi = [
+    ("Lavabo (rubinetto)", quote["Lavabo (rubinetto)"], P_MIN),
+    ("Vaso (cassetta)",    quote["Vaso (cassetta)"],    P_MIN),
+    ("Bidet",              quote["Bidet"],              P_MIN),
+    ("Doccia (soffione)",  quote["Doccia (soffione)"],  P_MIN),
+]
+
+print("Pelo libero serbatoio: {:.2f} m".format(Z_SERBATOIO))
+print("Pressione minima richiesta: {:.2f} mca (50 kPa)".format(P_MIN))
+print("Apparecchi nel bagno: {}".format(len(apparecchi)))

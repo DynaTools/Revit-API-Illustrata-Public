@@ -1,46 +1,34 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.13.1  |  Capitolo 7.13 - Il percorso minimo nella rete
-# Sezione: Passo 3 - Dijkstra in Python
+# Codice 7.13.1  |  Capitolo 7.13 - Il volume di scavo di una trincea
+# Sezione: Passi 1--2 - la sezione e la sua area
 
-import heapq
+# PASSO 2: area di un poligono qualsiasi (formula di Gauss / shoelace)
+def area_poligono(vertici):
+    n = len(vertici)
+    s = 0.0
+    for i in range(n):
+        x1, y1 = vertici[i]
+        x2, y2 = vertici[(i + 1) % n]   # il vertice dopo, l'ultimo torna al primo
+        s += x1 * y2 - x2 * y1          # prodotto incrociato
+    return abs(s) / 2.0
 
-# Dijkstra su un grafo pesato.
-# adj[u] = lista di (v, peso) per ogni arco u->v (qui non orientato).
-def dijkstra(adj, sorg, dest):
-    dist = dict((n, float("inf")) for n in adj)   # migliore distanza nota
-    prev = dict((n, None) for n in adj)            # predecessore nel cammino
-    dist[sorg] = 0.0
-    pq = [(0.0, sorg)]                             # coda di priorita'
-    while pq:
-        d, u = heapq.heappop(pq)                   # nodo aperto piu' vicino
-        if d > dist[u]:
-            continue                               # voce vecchia: scartala
-        if u == dest:
-            break                                  # ottimo per dest gia' certo
-        for v, w in adj[u]:                        # rilassa i vicini di u
-            nd = d + w                             # dist(u) + w(u,v)
-            if nd < dist[v]:                       # strada migliore per v?
-                dist[v] = nd
-                prev[v] = u
-                heapq.heappush(pq, (nd, v))
-    # ricostruzione del cammino da dest a ritroso fino a sorg
-    cammino, n = [], dest
-    while n is not None:
-        cammino.append(n)
-        n = prev[n]
-    cammino.reverse()
-    return dist[dest], cammino
+# PASSO 1: i vertici della sezione dai parametri di progetto
+b = 0.40            # larghezza di fondo (m)
+h = 1.00            # profondita' (m)
+scarpata = 0.50     # coefficiente m = 0,5 -> 0,5 m di allargamento per metro
 
-# la rete della figura (nodo: lista di (vicino, lunghezza in metri))
-adj = {
-    "A": [("C", 6.0), ("D", 4.0)],
-    "C": [("A", 6.0), ("B", 12.0), ("D", 5.0)],
-    "B": [("C", 12.0), ("E", 4.0)],
-    "D": [("A", 4.0), ("E", 7.0), ("C", 5.0)],
-    "E": [("D", 7.0), ("B", 4.0)],
-}
+top = b + 2.0 * h * scarpata           # larghezza in sommita'
+sezione = [(-b/2.0, 0.0), (b/2.0, 0.0),    # fondo: P1, P2
+           (top/2.0, h), (-top/2.0, h)]    # sommita': P3, P4
 
-lung, cammino = dijkstra(adj, "A", "B")
-print("Percorso minimo: {}".format(" -> ".join(cammino)))
-print("Lunghezza cavo: {:.1f} m".format(lung))
+A = area_poligono(sezione)             # area con la shoelace
+A_trap = (b + top) / 2.0 * h           # verifica: formula del trapezio
+A_rett = b * h                         # ipotesi rettangolare "a occhio"
+
+print("Larghezza in sommita' (top): {:.2f} m".format(top))
+print("Area sezione (shoelace): {:.2f} m2".format(A))
+print("Area sezione (trapezio): {:.2f} m2".format(A_trap))
+print("Ipotesi rettangolare b*h: {:.2f} m2".format(A_rett))
+print("Errore ipotesi rettangolare: {:.2f} %".format(
+    (A - A_rett) / A * 100.0))

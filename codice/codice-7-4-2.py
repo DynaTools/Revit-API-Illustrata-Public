@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.4.2  |  Capitolo 7.4 - Lo schema L--2L
+# Codice 7.4.2  |  Capitolo 7.4 - Distribuire con lo schema L-2L
 # Sezione: In Revit - la formula del centro genera i punti
 
 # ============================================================
