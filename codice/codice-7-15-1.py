@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.15.1  |  Capitolo 7.15 - Le pendenze: scarico e rampa
+# Codice 7.15.1  |  Capitolo 7.15 - La pendenza dello scarico, dal tratto alla filiera
 # Sezione: Passi 1--2 - leggere il tratto e calcolare
 
 import math
