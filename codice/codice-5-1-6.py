@@ -124,7 +124,7 @@ class RenameWorksetUI(object):
             lbl.VerticalContentAlignment = lbl.VerticalContentAlignment.Center
 
             arrow = TextBox()
-            arrow.Text = u"→"
+            arrow.Text = u"\u2192"
             arrow.Width = 30
             arrow.IsReadOnly = True
             arrow.Background = None
@@ -192,7 +192,7 @@ with revit.Transaction("Rinomina workset"):
             except Exception:
                 pass
 
-righe = [u"'{}' → '{}'".format(o, n) for o, n in renames.items()]
+righe = [u"'{}' \u2192 '{}'".format(o, n) for o, n in renames.items()]
 forms.alert(
     "{} workset rinominati:\n\n{}".format(renamed, "\n".join(righe))
 )
