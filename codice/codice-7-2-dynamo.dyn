@@ -1,8 +1,8 @@
 {
-  "Uuid": "732e015c-816b-5089-a9e2-72ba0d5a7835",
+  "Uuid": "128b216b-e28d-5d72-a0b3-d18969df7b7a",
   "IsCustomNode": false,
-  "Description": "Grafo del capitolo 7.2 (lunghezza del circuito): selezione del percorso, somma delle lunghezze 3D e sfrido.",
-  "Name": "cap-7-2-dynamo",
+  "Description": "Grafo del capitolo 7.3 (riempimento dei cavidotti): diametro interno, aree dei cavi e verifica CEI 64-8.",
+  "Name": "cap-7-3-dynamo",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -16,7 +16,7 @@
       "Outputs": [
         {
           "Id": "e7ba49f597d9584f80e97fcc5462a93d",
-          "Name": "Elements",
+          "Name": "Element",
           "Description": "",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -24,7 +24,7 @@
           "KeepListStructure": false
         }
       ],
-      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
       "InstanceId": [],
       "Replication": "Disabled"
     },
@@ -46,14 +46,14 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly",
-      "Code": "\"Length\";"
+      "Code": "\"Inside Diameter\";"
     },
     {
-      "Id": "d4432c1ca3655ea3a78673c43598efa8",
+      "Id": "30b5139428f5529eb0854bf1c9bb2a7d",
       "NodeType": "FunctionNode",
       "Inputs": [
         {
-          "Id": "5a8dabffc58b50c68b829df962db17c6",
+          "Id": "f2dc9a768c1257638e48511a9f42b1e3",
           "Name": "element",
           "Description": "",
           "UsingDefaultValue": false,
@@ -62,7 +62,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "d24533228b87588183152d5381652b39",
+          "Id": "59162b30c9bf5bb9890f8f16c856832f",
           "Name": "parameterName",
           "Description": "",
           "UsingDefaultValue": false,
@@ -73,7 +73,7 @@
       ],
       "Outputs": [
         {
-          "Id": "78a72e063b925780b18fd1c7cfe01dfe",
+          "Id": "e489d3e6dec55e409d5ba4c86329a019",
           "Name": "var[]..[]",
           "Description": "",
           "UsingDefaultValue": false,
@@ -113,7 +113,7 @@
         }
       ],
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Cap. 7.2 - Lunghezza reale del cavo\n# IN[0] = lunghezze dei tratti (parametro \"Length\", in metri)\nvals = IN[0]\nif not isinstance(vals, list):\n    vals = [vals]\n\n# somma solo i tratti con una lunghezza: i raccordi danno None\nL_mod = sum(v for v in vals if v is not None)\n\nL_cavo = L_mod * 1.05        # + 5% di sfrido (posa)\n\nOUT = round(L_cavo, 2)\n",
+      "Code": "# Cap. 7.3 - Riempimento del cavidotto\nimport math\n\n# IN[0] = diametro interno del tubo (\"Inside Diameter\", mm)\nDe = IN[0]\nif isinstance(De, list):\n    De = De[0]\n\n# i cavi del circuito: (nome, diametro esterno mm, quantita')\ncavi = [(\"FG16OR16 3G2.5\", 11.5, 2), (\"N07V-K 1x4\", 4.4, 3)]\n\nA_tubo = math.pi / 4.0 * De ** 2\nA_cavi = sum(math.pi / 4.0 * d ** 2 * q for _, d, q in cavi)\nK = A_cavi / A_tubo                    # riempimento (0..1)\n\nDt = math.sqrt(sum(d ** 2 * q for _, d, q in cavi))   # fascio\nconforme = De >= 1.3 * Dt              # CEI 64-8\n\nOUT = \"{:.1f} % - {}\".format(\n    K * 100, \"CONFORME\" if conforme else \"NON CONFORME\")\n",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Replication": "Disabled",
@@ -154,20 +154,20 @@
   "Connectors": [
     {
       "Start": "e7ba49f597d9584f80e97fcc5462a93d",
-      "End": "5a8dabffc58b50c68b829df962db17c6",
-      "Id": "3e24ad40d77d55359c6d4fa0c0c43475",
+      "End": "f2dc9a768c1257638e48511a9f42b1e3",
+      "Id": "ef72d4c14dae599fb87323ada8ab0c3a",
       "IsHidden": "False"
     },
     {
       "Start": "83e5305e8212532eac26f57286627b48",
-      "End": "d24533228b87588183152d5381652b39",
-      "Id": "77dc44b2d75c57b0bdf0025113d830e1",
+      "End": "59162b30c9bf5bb9890f8f16c856832f",
+      "Id": "dc30db818eeb5e6a92885d7e006031b1",
       "IsHidden": "False"
     },
     {
-      "Start": "78a72e063b925780b18fd1c7cfe01dfe",
+      "Start": "e489d3e6dec55e409d5ba4c86329a019",
       "End": "72621774875e515a9a13de987914cef5",
-      "Id": "b39678cf155955c7826988b281205e28",
+      "Id": "a4fa878e1cb25e36ad1adbb4cc9fe93f",
       "IsHidden": "False"
     },
     {
@@ -213,7 +213,7 @@
         "Id": "16bbd3c217e35a2899a0295f3873abb9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Select Model Elements",
+        "Name": "Select Model Element",
         "ShowGeometry": true,
         "Excluded": false,
         "X": 100.0,
@@ -230,7 +230,7 @@
         "Y": 100.0
       },
       {
-        "Id": "d4432c1ca3655ea3a78673c43598efa8",
+        "Id": "30b5139428f5529eb0854bf1c9bb2a7d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Name": "Element.GetParameterValueByName",

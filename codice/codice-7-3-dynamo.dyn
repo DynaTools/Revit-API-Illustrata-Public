@@ -1,8 +1,8 @@
 {
-  "Uuid": "128b216b-e28d-5d72-a0b3-d18969df7b7a",
+  "Uuid": "17bac859-afb0-5393-ab44-2ca9b81a9281",
   "IsCustomNode": false,
-  "Description": "Grafo del capitolo 7.3 (riempimento dei cavidotti): diametro interno, aree dei cavi e verifica CEI 64-8.",
-  "Name": "cap-7-3-dynamo",
+  "Description": "Grafo del capitolo 7.1 (staffaggio): lettura, calcolo e scrittura delle staffe.",
+  "Name": "cap-7-1-staffaggio",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -29,12 +29,21 @@
       "Replication": "Disabled"
     },
     {
-      "Id": "45915f015b435d56ac699cb3f3248711",
+      "Id": "708a9e4e4c7258a4893e4f7c93696fac",
       "NodeType": "CodeBlockNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "83e5305e8212532eac26f57286627b48",
+          "Id": "19e8a5b8234c548fb72615786ee8fef0",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9aa8cffa4d7e5b7bb29e79b5c2b4c116",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -46,14 +55,14 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
       "Replication": "Disabled",
       "Description": "Allows for DesignScript code to be authored directly",
-      "Code": "\"Inside Diameter\";"
+      "Code": "\"Length\";\n[\"FG16 4G95\",\"FG16 5G16\",\"FG16 3G2.5\"];"
     },
     {
-      "Id": "30b5139428f5529eb0854bf1c9bb2a7d",
+      "Id": "d4432c1ca3655ea3a78673c43598efa8",
       "NodeType": "FunctionNode",
       "Inputs": [
         {
-          "Id": "f2dc9a768c1257638e48511a9f42b1e3",
+          "Id": "5a8dabffc58b50c68b829df962db17c6",
           "Name": "element",
           "Description": "",
           "UsingDefaultValue": false,
@@ -62,7 +71,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "59162b30c9bf5bb9890f8f16c856832f",
+          "Id": "d24533228b87588183152d5381652b39",
           "Name": "parameterName",
           "Description": "",
           "UsingDefaultValue": false,
@@ -73,7 +82,7 @@
       ],
       "Outputs": [
         {
-          "Id": "e489d3e6dec55e409d5ba4c86329a019",
+          "Id": "78a72e063b925780b18fd1c7cfe01dfe",
           "Name": "var[]..[]",
           "Description": "",
           "UsingDefaultValue": false,
@@ -88,12 +97,21 @@
       "Description": "Get the value of one of the element's parameters.\n\nElement.GetParameterValueByName (parameterName: string): var[]..[]"
     },
     {
-      "Id": "1ac8040ce14259f8ad6997e88630051b",
-      "NodeType": "PythonScriptNode",
+      "Id": "abe8fadd06d258e4bd7afa6f0e1d5348",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
-          "Id": "72621774875e515a9a13de987914cef5",
-          "Name": "IN[0]",
+          "Id": "0036c4ead40e522abeddfefab93342b6",
+          "Name": "element",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bee8f837861551aa987fb1ee0699400c",
+          "Name": "parameterName",
           "Description": "",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -103,7 +121,46 @@
       ],
       "Outputs": [
         {
-          "Id": "cfb7a707385e59c0ac98bad721c5cc66",
+          "Id": "b697cf2daf05546094c64f77d99644f3",
+          "Name": "var[]..[]",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "FunctionSignature": "Revit.Elements.Element.GetParameterValueByName@string",
+      "Replication": "Auto",
+      "Description": "Get the value of one of the element's parameters.\n\nElement.GetParameterValueByName (parameterName: string): var[]..[]"
+    },
+    {
+      "Id": "8995b147a8da534989cc0da2a5e7655d",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "bf8ce5aa947c5ec39e89ff88f49c50f9",
+          "Name": "IN[0]",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1b2486ccf4c9566c8690332e396fed49",
+          "Name": "IN[1]",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b81a03a2a07f54eca4629652b18b83f7",
           "Name": "OUT",
           "Description": "",
           "UsingDefaultValue": false,
@@ -113,11 +170,50 @@
         }
       ],
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "# Cap. 7.3 - Riempimento del cavidotto\nimport math\n\n# IN[0] = diametro interno del tubo (\"Inside Diameter\", mm)\nDe = IN[0]\nif isinstance(De, list):\n    De = De[0]\n\n# i cavi del circuito: (nome, diametro esterno mm, quantita')\ncavi = [(\"FG16OR16 3G2.5\", 11.5, 2), (\"N07V-K 1x4\", 4.4, 3)]\n\nA_tubo = math.pi / 4.0 * De ** 2\nA_cavi = sum(math.pi / 4.0 * d ** 2 * q for _, d, q in cavi)\nK = A_cavi / A_tubo                    # riempimento (0..1)\n\nDt = math.sqrt(sum(d ** 2 * q for _, d, q in cavi))   # fascio\nconforme = De >= 1.3 * Dt              # CEI 64-8\n\nOUT = \"{:.1f} % - {}\".format(\n    K * 100, \"CONFORME\" if conforme else \"NON CONFORME\")\n",
+      "Code": "# Cap. 7.1 - Calcolo delle staffe (support spacing)\nimport math\n\n# --- input dal grafo ---\nL   = IN[0]           # lunghezza del tratto (m)\nqta = IN[1]           # [n1, n2, n3] quantita' dei cavi lette dal modello\n\n# --- dati di progetto (catalogo) ---\nw_pass  = 5.00                 # kg/m, peso proprio della passerella\npesi    = [4.10, 1.35, 0.18]   # kg/m per FG16 4G95 / 5G16 / 3G2.5\ni       = 1.50                 # m, interasse di progetto\nportata = 152.9                # kg, portata staffa 41/600 (1500 N)\n\n# --- calcolo ---\nw = w_pass + sum(p * n for p, n in zip(pesi, qta))   # peso al metro\nF = w * i                                            # carico sulla staffa interna\nN = int(math.ceil(L / i)) + 1                        # numero di staffe\nesito = \"CONFORME\" if F <= portata else \"NON VERIFICATO\"\n\n# --- output: [numero di staffe, interasse] ---\nOUT = [N, i]\n",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Replication": "Disabled",
       "Description": "Runs an embedded Python script."
+    },
+    {
+      "Id": "3f527fb5c05b5524ace791e082202f72",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        {
+          "Id": "46f358caf2fd5e28bfb443fd39869cbd",
+          "Name": "OUT",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8adbace470aa50d69882c45f8fbff082",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "aef46eea53135015a7b12334244d0fdc",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly",
+      "Code": "OUT[0];\nOUT[1];"
     },
     {
       "Id": "f05389ead649568a8e747810b08a3d30",
@@ -149,31 +245,216 @@
       "Description": "Visualizes the node's output",
       "WatchWidth": 100.0,
       "WatchHeight": 38.0
+    },
+    {
+      "Id": "587ed695a54e5cd188ce7c09dad7d07a",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1026792a813151e4977d33bfae7ba92e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0a17349679c856f782e7ff0e996508ef",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly",
+      "Code": "\"Staffe n\";\n\"Staffe interasse\";"
+    },
+    {
+      "Id": "b17af323e7815191b4946cfaf5474c4f",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "c74b52bb481f5bed8ed775fdb815ca58",
+          "Name": "element",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b25724d640df5d6983e82ffa841bf7f7",
+          "Name": "parameterName",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 1,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "257715e1af1b545f97ca86382de084cd",
+          "Name": "value",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4d0aa673cce45fc58cc6e5c594a75114",
+          "Name": "Element",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "FunctionSignature": "Revit.Elements.Element.SetParameterByName@string,var",
+      "Replication": "Longest",
+      "Description": "Set one of the element's parameters.\n\nElement.SetParameterByName (parameterName: string, value: var): Element"
+    },
+    {
+      "Id": "81c7067cd28f5f71b118a022509cda45",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "4e1a22354aa75cf5a3bfa6df10761408",
+          "Name": "element",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3a57a2f0b3bf572d88526859381384c2",
+          "Name": "parameterName",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 1,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6197c23560f751c58e32c9ed1ee3ca1a",
+          "Name": "value",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5a797e22d86e517cb20a8c9ca9baee02",
+          "Name": "Element",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "FunctionSignature": "Revit.Elements.Element.SetParameterByName@string,var",
+      "Replication": "Longest",
+      "Description": "Set one of the element's parameters.\n\nElement.SetParameterByName (parameterName: string, value: var): Element"
     }
   ],
   "Connectors": [
     {
       "Start": "e7ba49f597d9584f80e97fcc5462a93d",
-      "End": "f2dc9a768c1257638e48511a9f42b1e3",
-      "Id": "ef72d4c14dae599fb87323ada8ab0c3a",
+      "End": "5a8dabffc58b50c68b829df962db17c6",
+      "Id": "3e24ad40d77d55359c6d4fa0c0c43475",
       "IsHidden": "False"
     },
     {
-      "Start": "83e5305e8212532eac26f57286627b48",
-      "End": "59162b30c9bf5bb9890f8f16c856832f",
-      "Id": "dc30db818eeb5e6a92885d7e006031b1",
+      "Start": "e7ba49f597d9584f80e97fcc5462a93d",
+      "End": "0036c4ead40e522abeddfefab93342b6",
+      "Id": "f5d0391cbb92556598144a3c6ad4d1d6",
       "IsHidden": "False"
     },
     {
-      "Start": "e489d3e6dec55e409d5ba4c86329a019",
-      "End": "72621774875e515a9a13de987914cef5",
-      "Id": "a4fa878e1cb25e36ad1adbb4cc9fe93f",
+      "Start": "e7ba49f597d9584f80e97fcc5462a93d",
+      "End": "c74b52bb481f5bed8ed775fdb815ca58",
+      "Id": "f8a3d6dfe54451409fc53a87cafd53b4",
       "IsHidden": "False"
     },
     {
-      "Start": "cfb7a707385e59c0ac98bad721c5cc66",
+      "Start": "e7ba49f597d9584f80e97fcc5462a93d",
+      "End": "4e1a22354aa75cf5a3bfa6df10761408",
+      "Id": "4fb156e431c45549b777d9f385637741",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "19e8a5b8234c548fb72615786ee8fef0",
+      "End": "d24533228b87588183152d5381652b39",
+      "Id": "99ea993fe1b75f6c9a9acfce9f763001",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9aa8cffa4d7e5b7bb29e79b5c2b4c116",
+      "End": "bee8f837861551aa987fb1ee0699400c",
+      "Id": "5288860c15195542b3e9f83f4fc64b3c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "78a72e063b925780b18fd1c7cfe01dfe",
+      "End": "bf8ce5aa947c5ec39e89ff88f49c50f9",
+      "Id": "b9b35c4f6b7a5990b4097f78a7ccc56c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b697cf2daf05546094c64f77d99644f3",
+      "End": "1b2486ccf4c9566c8690332e396fed49",
+      "Id": "e012a0bd44ce50e883d3aecb1d289c1e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b81a03a2a07f54eca4629652b18b83f7",
+      "End": "46f358caf2fd5e28bfb443fd39869cbd",
+      "Id": "a0a73c31deaa5aaf940fa4995db327f9",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "8adbace470aa50d69882c45f8fbff082",
+      "End": "257715e1af1b545f97ca86382de084cd",
+      "Id": "94e14375262c58cca60c328530a418c3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "aef46eea53135015a7b12334244d0fdc",
+      "End": "6197c23560f751c58e32c9ed1ee3ca1a",
+      "Id": "1c378ff3af8b5a829152d54f55b6cb3d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "8adbace470aa50d69882c45f8fbff082",
       "End": "041ddb15e7915b8abe48eeb5fadcc6bc",
-      "Id": "5953e5a11dcf512ebbf832f89b74d09b",
+      "Id": "d4cc2f0b1d675ca1974deadf152a300c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "1026792a813151e4977d33bfae7ba92e",
+      "End": "b25724d640df5d6983e82ffa841bf7f7",
+      "Id": "7b6b1404959e53c39ede910f21c3cfc4",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0a17349679c856f782e7ff0e996508ef",
+      "End": "3a57a2f0b3bf572d88526859381384c2",
+      "Id": "dd5d2c9f73b25601a59facc8ebbf58cc",
       "IsHidden": "False"
     }
   ],
@@ -217,10 +498,10 @@
         "ShowGeometry": true,
         "Excluded": false,
         "X": 100.0,
-        "Y": 220.0
+        "Y": 310.0
       },
       {
-        "Id": "45915f015b435d56ac699cb3f3248711",
+        "Id": "708a9e4e4c7258a4893e4f7c93696fac",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Name": "Code Block",
@@ -230,24 +511,44 @@
         "Y": 100.0
       },
       {
-        "Id": "30b5139428f5529eb0854bf1c9bb2a7d",
+        "Id": "d4432c1ca3655ea3a78673c43598efa8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Name": "Element.GetParameterValueByName",
         "ShowGeometry": true,
         "Excluded": false,
-        "X": 460.0,
+        "X": 500.0,
         "Y": 240.0
       },
       {
-        "Id": "1ac8040ce14259f8ad6997e88630051b",
+        "Id": "abe8fadd06d258e4bd7afa6f0e1d5348",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Element.GetParameterValueByName",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 500.0,
+        "Y": 420.0
+      },
+      {
+        "Id": "8995b147a8da534989cc0da2a5e7655d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Name": "Python Script",
         "ShowGeometry": true,
         "Excluded": false,
-        "X": 900.0,
-        "Y": 245.0
+        "X": 940.0,
+        "Y": 315.0
+      },
+      {
+        "Id": "3f527fb5c05b5524ace791e082202f72",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1220.0,
+        "Y": 325.0
       },
       {
         "Id": "f05389ead649568a8e747810b08a3d30",
@@ -256,8 +557,38 @@
         "Name": "Watch",
         "ShowGeometry": true,
         "Excluded": false,
-        "X": 1180.0,
-        "Y": 250.0
+        "X": 1260.0,
+        "Y": 500.0
+      },
+      {
+        "Id": "587ed695a54e5cd188ce7c09dad7d07a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1540.0,
+        "Y": 140.0
+      },
+      {
+        "Id": "b17af323e7815191b4946cfaf5474c4f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Element.SetParameterByName",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1570.0,
+        "Y": 260.0
+      },
+      {
+        "Id": "81c7067cd28f5f71b118a022509cda45",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Element.SetParameterByName",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1570.0,
+        "Y": 460.0
       }
     ],
     "Annotations": [],

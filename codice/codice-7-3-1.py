@@ -1,42 +1,35 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.3.1  |  Capitolo 7.3 - Il riempimento dei cavidotti
-# Sezione: Passi 1--2 - raccogliere il cavidotto
+# Codice 7.3.1  |  Capitolo 7.3 - Lo staffaggio
+# Sezione: Passi 1--2 - preparazione, dati di progetto e selezione
 
 # ============================================================
 # 0. PREPARAZIONE                               [PY] + [REVIT]
-#    librerie, conversione e documento Revit attivo
+#    librerie e documento Revit attivo
 # ============================================================
-import math
-from Autodesk.Revit.DB import BuiltInParameter
 from Autodesk.Revit.UI.Selection import ObjectType
 
-FT_MM = 304.8                      # 1 piede = 304.8 mm
+FT_M = 0.3048                      # 1 piede = 0.3048 m
 
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
 
 # ============================================================
-# 1. PASSO 1, IL CLIC                                  [REVIT]
-#    l'utente seleziona il cavidotto nel modello
+# 1. DATI DI PROGETTO                                    [ENG]
+#    pesi al metro dalle schede tecniche (kg/m)
 # ============================================================
-ref     = uidoc.Selection.PickObject(ObjectType.Element,
-                                     "Seleziona il cavidotto")
-conduit = doc.GetElement(ref.ElementId)
+PESI = {
+    "FG16 4G95":  4.10,
+    "FG16 5G16":  1.35,
+    "FG16 3G2.5": 0.18,
+}
+PESO_PASSERELLA = 5.00             # kg/m, catalogo (450 x 100)
 
 # ============================================================
-# 2. PASSO 2, IL DIAMETRO                      [REVIT] + [ENG]
-#    diametro interno (la API restituisce piedi -> mm)
+# 2. PASSO 1, IL CLIC                          [REVIT] + [OUT]
+#    l'utente seleziona il tratto nel modello
 # ============================================================
-p_int = conduit.get_Parameter(
-    BuiltInParameter.RBS_CONDUIT_INNER_DIAM_PARAM)
-De    = p_int.AsDouble() * FT_MM   # diametro interno in mm
-
-A_tubo = math.pi / 4.0 * De**2     # area interna in mm^2
-
-# ============================================================
-# 3. IL RISULTATO                                        [OUT]
-# ============================================================
-print("Cavidotto CD-01")
-print("Diametro interno De: {:.1f} mm".format(De))
-print("Area interna del tubo: {:.0f} mm2".format(A_tubo))
+ref  = uidoc.Selection.PickObject(ObjectType.Element,
+                                  "Seleziona la passerella")
+tray = doc.GetElement(ref.ElementId)
+print("Selezionato: {}".format(tray.Name))

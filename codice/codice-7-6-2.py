@@ -1,30 +1,29 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.6.2  |  Capitolo 7.6 - Il calcolo illuminotecnico punto per punto
-# Sezione: Passo 3 - sommare i contributi
+# Codice 7.6.2  |  Capitolo 7.6 - La copertura Wi-Fi
+# Sezione: Passi 3--4 - il livello ricevuto e il verdetto
 
-# PASSO 3: illuminamento in ogni punto = somma dei contributi
-I_cd  = 1200.0                     # intensita' luminosa (cd), verso il basso
-n_hat = XYZ(0, 0, 1)               # normale del piano di lavoro (orizzontale)
+P_TX  = 20.0                        # potenza trasmessa (dBm)
+PL0   = 40.0                        # path loss a d0 = 1 m (dB)
+D0    = 1.0                         # distanza di riferimento (m)
+N_ENV = 3.0                         # esponente d'ambiente (interni)
+SOGLIA = -67.0                      # copertura voce/streaming (dBm)
 
-def illuminamento(P, sorgenti):
-    """E nel punto P (in metri) sommando inverso-quadrato * coseno."""
-    E = 0.0
-    for S in sorgenti:
-        d_vec  = S - P                 # vettore P -> S
-        d      = d_vec.GetLength()     # distanza (m)
-        cos_eps = n_hat.DotProduct(d_vec) / d   # prodotto scalare / d = coseno
-        E += I_cd * cos_eps / d**2     # inverso del quadrato per coseno
-    return E
+def perdita_percorso(d):
+    return PL0 + 10.0 * N_ENV * math.log10(d / D0)
 
-# le sorgenti vanno in metri (qui simuliamo la lettura del modello)
-S_m = [XYZ(x, y, 3.00) for (x, y) in
-       [(1.0,1.0),(3.0,1.0),(5.0,1.0),(1.0,3.0),(3.0,3.0),(5.0,3.0)]]
+def livello_ricevuto(ap_pt, p, caster, tabella):
+    d = ap_pt.DistanceTo(p) * FT_M  # distanza in metri
+    pl = perdita_percorso(d)
+    att = attenuazione_ostacoli(ap_pt, p, caster, tabella)
+    return P_TX - pl - att, d, pl, att
 
-# verifica su un singolo apparecchio: sotto, e a 1,5 m di offset
-P_sotto = XYZ(1.0, 1.0, 0.80)
-P_off   = XYZ(2.5, 1.0, 0.80)      # 1,5 m a lato dell'apparecchio (1.0,1.0)
-print("1 apparecchio - sotto:        {:.1f} lux".format(
-    illuminamento(P_sotto, [S_m[0]])))
-print("1 apparecchio - offset 1,5 m: {:.1f} lux".format(
-    illuminamento(P_off, [S_m[0]])))
+# PASSO 3-4: due punti da verificare (in piedi)
+punti = {"P1": XYZ(6.80/FT_M, -2.20/FT_M, 2.50/FT_M),    # 8 m, 1 cartongesso
+         "P2": XYZ(14.00/FT_M, -4.80/FT_M, 2.50/FT_M)}   # 15 m, oltre cemento
+
+for nome, p in punti.items():
+    prx, d, pl, att = livello_ricevuto(origine, p, caster, ATT)
+    esito = "COPERTO" if prx >= SOGLIA else "OMBRA (non coperto)"
+    print("{}: d={:.0f} m  PL={:.1f} dB  att={:.1f} dB  "
+          "Prx={:.1f} dBm -> {}".format(nome, d, pl, att, prx, esito))

@@ -1,42 +1,32 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.5.3  |  Capitolo 7.5 - La caduta di tensione
-# Sezione: Passo 3 - calcolare la caduta
+# Codice 7.5.3  |  Capitolo 7.5 - Il calcolo illuminotecnico punto per punto
+# Sezione: Passo 4 - media, minimo, uniformità e verifica
 
-# ============================================================
-# 0. RIPARTENZA                            [PY]+[REVIT]+[ENG]
-#    blocco autonomo: ricrea lunghezza e dati elettrici
-# ============================================================
-from Autodesk.Revit.DB import LocationCurve
-from Autodesk.Revit.UI.Selection import ObjectType
+# PASSO 4: valuta la griglia, calcola media / minimo / uniformita'
+griglia_m = [XYZ(x, y, 0.80) for (x, y) in
+             [(gx, gy) for gx in (0.5,1.5,2.5,3.5,4.5,5.5)
+                       for gy in (0.5,1.5,2.5,3.5)]]
 
-FT_M = 0.3048
-# dati del passo 2: V, A, cosphi, mm2, ohm*mm2/m
-Un, Ib, cosphi, S, rho = 400.0, 28.0, 0.85, 6.0, 0.0225
+valori = [illuminamento(P, S_m) for P in griglia_m]
 
-uidoc = __revit__.ActiveUIDocument
-doc   = uidoc.Document
-refs  = uidoc.Selection.PickObjects(ObjectType.Element,
-                                    "Seleziona tutto il percorso, poi Finish")
+E_media = sum(valori) / len(valori)
+E_min   = min(valori)
+E_max   = max(valori)
+U0      = E_min / E_media
 
-L_mod = 0.0
-for r in refs:
-    loc = doc.GetElement(r.ElementId).Location
-    if isinstance(loc, LocationCurve):
-        L_mod += loc.Curve.Length * FT_M
-L = L_mod * 1.05                    # lunghezza del cavo (+ 5% di sfrido)
+# verifica norma: ufficio (UNI EN 12464-1)
+Em_norma = 500.0
+U0_norma = 0.60
+conforme = (E_media >= Em_norma) and (U0 >= U0_norma)
 
-# ============================================================
-# 1. PASSO 3, LA FORMULA TRIFASE                         [ENG]
-#    DeltaU = (sqrt(3) * rho * L * Ib * cosphi) / S
-# ============================================================
-import math
-
-dU  = (math.sqrt(3) * rho * L * Ib * cosphi) / S    # in volt
-dU_pct = dU / Un * 100.0                             # in percentuale
-
-# ============================================================
-# 2. L'ESITO                                             [OUT]
-# ============================================================
-print("Caduta di tensione DeltaU: {:.2f} V".format(dU))
-print("Caduta percentuale DeltaU%: {:.2f} %".format(dU_pct))
+print("E media: {:.0f} lux".format(E_media))
+print("E min:   {:.0f} lux   E max: {:.0f} lux".format(E_min, E_max))
+print("Uniformita U0: {:.2f}".format(U0))
+print("---")
+print("Richiesto (ufficio): Em >= {:.0f} lux, U0 >= {:.2f}".format(
+    Em_norma, U0_norma))
+if conforme:
+    print("ESITO: CONFORME")
+else:
+    print("ESITO: NON CONFORME")

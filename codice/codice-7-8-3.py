@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.8.3  |  Capitolo 7.8 - L'aria, portata e ricambi
-# Sezione: Passo 4 - verificare i limiti di comfort
+# Codice 7.8.3  |  Capitolo 7.8 - Il percorso minimo nella rete
+# Sezione: Il verdetto - i due itinerari a confronto
 
-# PASSO 4: verifica contro la fascia raccomandata (ramo derivato)
-V_MIN = 3.0      # m/s - sotto: canale sovradimensionato
-V_MAX = 5.0      # m/s - sopra: rumore e perdite di carico
+# il grafo costruito ai passi 1-2 (qui esplicitato come nella figura)
+adj = {
+    "A": [("C", 6.0), ("D", 4.0)],
+    "C": [("A", 6.0), ("B", 12.0), ("D", 5.0)],
+    "B": [("C", 12.0), ("E", 4.0)],
+    "D": [("A", 4.0), ("E", 7.0), ("C", 5.0)],
+    "E": [("D", 7.0), ("B", 4.0)],
+}
 
-if v < V_MIN:
-    esito = "SOTTO LA FASCIA - canale sovradimensionato"
-elif v > V_MAX:
-    esito = "SOPRA LA FASCIA - rischio rumore e perdite"
-else:
-    esito = "NELLA FASCIA - OK"
+# percorso ottimo (Dijkstra esplora tutto)
+lung, cammino = dijkstra(adj, "A", "B")
 
-print("Velocita': {:.2f} m/s   (fascia consigliata {:.0f}-{:.0f} m/s)".format(
-    v, V_MIN, V_MAX))
-print("ESITO: {}".format(esito))
+# itinerario "piu' dritto in pianta": A -> C -> B
+alt = 6.0 + 12.0                   # A-C (6) + C-B interrato (12)
+
+print("Itinerario ottimo:  {}  =  {:.1f} m".format(
+    " -> ".join(cammino), lung))
+print("Piu' dritto in pianta: A -> C -> B  =  {:.1f} m".format(alt))
+print("---")
+print("Risparmio: {:.1f} m ({:.0f}%) di cavo".format(
+    alt - lung, 100.0 * (alt - lung) / alt))

@@ -1,40 +1,56 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.2.3  |  Capitolo 7.2 - La lunghezza del circuito
-# Sezione: Passo 4 - sfrido e lunghezza totale
+# Codice 7.2.3  |  Capitolo 7.2 - Il riempimento dei cavidotti
+# Sezione: Passo 4 - calcolare e verificare
 
 # ============================================================
 # 0. RIPARTENZA                            [PY]+[REVIT]+[ENG]
-#    blocco autonomo: riclicca e risomma il percorso 3D
+#    blocco autonomo: riclic, De, parametri e aree dei cavi
 # ============================================================
-from Autodesk.Revit.DB import LocationCurve
+import math
+from Autodesk.Revit.DB import BuiltInParameter
 from Autodesk.Revit.UI.Selection import ObjectType
 
-FT_M  = 0.3048
-uidoc = __revit__.ActiveUIDocument
-doc   = uidoc.Document
-refs  = uidoc.Selection.PickObjects(ObjectType.Element,
-                                    "Seleziona tutto il percorso, poi Finish")
+FT_MM = 304.8
+catalogo = [("FG16OR16 3G6 mm²", 14.0),
+            ("FG16OR16 3G4 mm²", 12.5)]
 
-L_ft = 0.0
-for r in refs:
-    loc = doc.GetElement(r.ElementId).Location
-    if isinstance(loc, LocationCurve):
-        L_ft += loc.Curve.Length
-L_mod = L_ft * FT_M
+uidoc   = __revit__.ActiveUIDocument
+doc     = uidoc.Document
+ref     = uidoc.Selection.PickObject(ObjectType.Element,
+                                     "Seleziona il cavidotto")
+conduit = doc.GetElement(ref.ElementId)
+De      = conduit.get_Parameter(
+    BuiltInParameter.RBS_CONDUIT_INNER_DIAM_PARAM).AsDouble() * FT_MM
+A_tubo  = math.pi / 4.0 * De**2
+
+cavi = [(n, d, conduit.LookupParameter(n).AsInteger())
+        for n, d in catalogo if conduit.LookupParameter(n)]
+
+A_cavi = somma_d2 = 0.0
+for nome, d, q in cavi:
+    A_cavi   += math.pi / 4.0 * d**2 * q
+    somma_d2 += d**2 * q
 
 # ============================================================
-# 1. PASSO 4, SFRIDO E TOTALE                            [ENG]
-#    margine di posa: raccordi, terminazioni, scorta (%)
+# 1. PASSO 4, RIEMPIMENTO E VERIFICA                     [ENG]
+#    K = area cavi / area tubo; CEI 64-8: De >= 1.3 x Dt
 # ============================================================
-sfrido_pct = 5.0
-L_sfrido   = L_mod * sfrido_pct / 100.0
-L_cavo     = L_mod + L_sfrido
+K = A_cavi / A_tubo                # riempimento (0..1)
+
+Dt     = math.sqrt(somma_d2)       # diametro del fascio (mm)
+De_min = 1.3 * Dt                  # diametro minimo richiesto
+conforme = De >= De_min
 
 # ============================================================
-# 2. IL RISULTATO                                        [OUT]
+# 2. L'ESITO                                             [OUT]
 # ============================================================
-print("Lunghezza modellata: {:.2f} m".format(L_mod))
-print("Sfrido ({:.0f}%): {:.2f} m".format(sfrido_pct, L_sfrido))
+print("Riempimento: {:.1f} %".format(K * 100))
+print("Diametro fascio Dt: {:.1f} mm".format(Dt))
+print("Diametro minimo del tubo (1.3 x Dt): {:.1f} mm".format(De_min))
+print("Diametro reale del tubo De: {:.1f} mm".format(De))
 print("---")
-print("LUNGHEZZA DEL CAVO: {:.2f} m".format(L_cavo))
+if conforme:
+    print("ESITO: CONFORME (margine {:.1f} mm)".format(De - De_min))
+else:
+    print("ESITO: NON CONFORME - serve un tubo piu' grande")

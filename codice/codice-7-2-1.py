@@ -1,49 +1,42 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.2.1  |  Capitolo 7.2 - La lunghezza del circuito
-# Sezione: Passi 1--2 - misurare il percorso dal modello
+# Codice 7.2.1  |  Capitolo 7.2 - Il riempimento dei cavidotti
+# Sezione: Passi 1--2 - raccogliere il cavidotto
 
 # ============================================================
 # 0. PREPARAZIONE                               [PY] + [REVIT]
-#    librerie e documento Revit attivo
+#    librerie, conversione e documento Revit attivo
 # ============================================================
-from Autodesk.Revit.DB import LocationCurve
+import math
+from Autodesk.Revit.DB import BuiltInParameter
 from Autodesk.Revit.UI.Selection import ObjectType
 
-FT_M = 0.3048                      # 1 piede = 0.3048 m
+FT_MM = 304.8                      # 1 piede = 304.8 mm
 
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
 
 # ============================================================
-# 1. PASSO 1, I CLIC                                   [REVIT]
-#    l'utente seleziona TUTTO il percorso: tratti e curve
+# 1. PASSO 1, IL CLIC                                  [REVIT]
+#    l'utente seleziona il cavidotto nel modello
 # ============================================================
-refs = uidoc.Selection.PickObjects(ObjectType.Element,
-                                   "Seleziona tutto il percorso, poi Finish")
+ref     = uidoc.Selection.PickObject(ObjectType.Element,
+                                     "Seleziona il cavidotto")
+conduit = doc.GetElement(ref.ElementId)
 
 # ============================================================
-# 2. PASSO 2, LA SOMMA 3D                      [REVIT] + [ENG]
-#    lunghezza 3D di ogni tratto; le curve (raccordi) sono
-#    punti, non hanno una curva-linea: si contano e si saltano
+# 2. PASSO 2, IL DIAMETRO                      [REVIT] + [ENG]
+#    diametro interno (la API restituisce piedi -> mm)
 # ============================================================
-L_ft     = 0.0
-n_tratti = 0
-n_curve  = 0
-for r in refs:
-    loc = doc.GetElement(r.ElementId).Location
-    if isinstance(loc, LocationCurve):
-        L_ft += loc.Curve.Length       # lunghezza 3D, in piedi
-        n_tratti += 1
-    else:
-        n_curve += 1                   # raccordo: nessuna curva-linea
+p_int = conduit.get_Parameter(
+    BuiltInParameter.RBS_CONDUIT_INNER_DIAM_PARAM)
+De    = p_int.AsDouble() * FT_MM   # diametro interno in mm
 
-L_mod = L_ft * FT_M                    # lunghezza modellata, in metri
+A_tubo = math.pi / 4.0 * De**2     # area interna in mm^2
 
 # ============================================================
 # 3. IL RISULTATO                                        [OUT]
 # ============================================================
-print("Elementi selezionati: {}".format(len(refs)))
-print("  tratti con curva: {}".format(n_tratti))
-print("  raccordi (curve): {}".format(n_curve))
-print("Lunghezza modellata (3D): {:.2f} m".format(L_mod))
+print("Cavidotto CD-01")
+print("Diametro interno De: {:.1f} mm".format(De))
+print("Area interna del tubo: {:.0f} mm2".format(A_tubo))

@@ -1,45 +1,49 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.6.1  |  Capitolo 7.6 - Il calcolo illuminotecnico punto per punto
-# Sezione: Passi 1--2 - apparecchi e griglia dal modello
+# Codice 7.6.1  |  Capitolo 7.6 - La copertura Wi-Fi
+# Sezione: Passi 1--2 - l'antenna e i muri sul raggio
 
 import math
 from Autodesk.Revit.DB import (FilteredElementCollector, BuiltInCategory,
-    XYZ)
+    XYZ, View3D, ReferenceIntersector, FindReferenceTarget)
 
-FT_M = 0.3048                      # 1 piede = 0.3048 m
+FT_M = 0.3048                       # 1 piede = 0.3048 m
 
-uidoc = __revit__.ActiveUIDocument
-doc   = uidoc.Document
+doc = __revit__.ActiveUIDocument.Document
 
-# PASSO 1: leggi gli apparecchi illuminanti dal modello
-apparecchi = (FilteredElementCollector(doc)
-              .OfCategory(BuiltInCategory.OST_LightingFixtures)
-              .WhereElementIsNotElementType()
-              .ToElements())
+# tabella materiale -> attenuazione (dB) a 2.4 GHz
+ATT = {"cartongesso": 3.0, "vetro": 2.0, "mattone": 6.0, "cemento": 12.0}
 
-sorgenti = []                      # lista di (x, y, z) in metri
-for ap in apparecchi:
-    p = ap.Location.Point          # XYZ in piedi
-    sorgenti.append(XYZ(p.X * FT_M, p.Y * FT_M, p.Z * FT_M))
+# PASSO 1: individua l'access point e prepara il ray caster
+ap = (FilteredElementCollector(doc)
+      .OfCategory(BuiltInCategory.OST_CommunicationDevices)
+      .WhereElementIsNotElementType()
+      .FirstElement())
 
-# PASSO 2: bounding box del locale (un Room) -> griglia sul piano di lavoro
-room   = uidoc.Selection.PickElementsByRectangle()[0]  # o un Room scelto
-bb     = room.get_BoundingBox(None)
-x0, x1 = bb.Min.X * FT_M, bb.Max.X * FT_M    # confini in metri
-y0, y1 = bb.Min.Y * FT_M, bb.Max.Y * FT_M
+origine = ap.Location.Point          # posizione dell'antenna (piedi)
 
-z_piano = 0.80                     # piano di lavoro a 0,80 m
-passo   = 1.00                     # maglia della griglia: 1,0 m
-griglia = []
-gx = x0 + passo / 2.0
-while gx < x1:
-    gy = y0 + passo / 2.0
-    while gy < y1:
-        griglia.append((gx, gy, z_piano))
-        gy += passo
-    gx += passo
+vista3d = (FilteredElementCollector(doc).OfClass(View3D)
+           .WhereElementIsNotElementType().FirstElement())
+caster = ReferenceIntersector(vista3d)
+caster.TargetType = FindReferenceTarget.Element
 
-print("Apparecchi trovati: {}".format(len(sorgenti)))
-print("Locale: {:.1f} x {:.1f} m".format(x1 - x0, y1 - y0))
-print("Punti di griglia: {}".format(len(griglia)))
+# PASSO 2: conta i muri attraversati dal raggio AP -> punto
+def attenuazione_ostacoli(ap_pt, p, caster, tabella):
+    direzione = (p - ap_pt).Normalize()
+    colpiti = caster.Find(ap_pt, direzione)
+    dmax = ap_pt.DistanceTo(p)        # non guardare oltre il punto
+    perdita = 0.0
+    for ref in colpiti:
+        if ref.Proximity > dmax:
+            continue
+        muro = doc.GetElement(ref.GetReference())
+        nome = (muro.Name or "").lower()
+        for chiave, db in tabella.items():
+            if chiave in nome:
+                perdita += db
+                break
+    return perdita
+
+print("Access point: {}".format(ap.Name))
+print("Posizione AP: ({:.2f}, {:.2f}, {:.2f}) m".format(
+    origine.X*FT_M, origine.Y*FT_M, origine.Z*FT_M))

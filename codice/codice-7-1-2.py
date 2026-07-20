@@ -1,48 +1,43 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.1.2  |  Capitolo 7.1 - Lo staffaggio
-# Sezione: Passi 1--2 - lettura, calcolo e risultato
+# Codice 7.1.2  |  Capitolo 7.1 - La lunghezza del circuito
+# Sezione: Passo 3 - la lunghezza 3D contro quella in pianta
 
 # ============================================================
 # 0. RIPARTENZA                                 [PY] + [REVIT]
-#    blocco autonomo: import, dati e selezione, compressi
+#    blocco autonomo: riclicca l'intero percorso
 # ============================================================
+import math
+from Autodesk.Revit.DB import LocationCurve
 from Autodesk.Revit.UI.Selection import ObjectType
 
-FT_M = 0.3048
-PESI = {"FG16 4G95": 4.10, "FG16 5G16": 1.35, "FG16 3G2.5": 0.18}
-PESO_PASSERELLA = 5.00
-
+FT_M  = 0.3048
 uidoc = __revit__.ActiveUIDocument
 doc   = uidoc.Document
-ref   = uidoc.Selection.PickObject(ObjectType.Element,
-                                   "Seleziona la passerella")
-tray  = doc.GetElement(ref.ElementId)
+refs  = uidoc.Selection.PickObjects(ObjectType.Element,
+                                    "Seleziona tutto il percorso, poi Finish")
 
 # ============================================================
-# 1. PASSO 1, LA LETTURA                       [REVIT] + [ENG]
-#    lunghezza della curva, da piedi a metri (Legge II)
+# 1. PASSO 3, 3D CONTRO PIANTA                           [ENG]
+#    per ogni tratto: lunghezza 3D e ombra in pianta (solo xy)
 # ============================================================
-L_run = tray.Location.Curve.Length * FT_M
-print("Tratto: {}   L = {:.2f} m".format(tray.Name, L_run))
+L3d_ft = 0.0
+Lpl_ft = 0.0
+for r in refs:
+    loc = doc.GetElement(r.ElementId).Location
+    if isinstance(loc, LocationCurve):
+        c  = loc.Curve
+        p0 = c.GetEndPoint(0)
+        p1 = c.GetEndPoint(1)
+        L3d_ft += c.Length                                # 3D reale
+        Lpl_ft += math.hypot(p1.X - p0.X, p1.Y - p0.Y)    # proiezione in pianta
+
+L3d = L3d_ft * FT_M
+Lpl = Lpl_ft * FT_M
 
 # ============================================================
-# 2. PASSO 2, IL CALCOLO                       [ENG] + [REVIT]
-#    w = passerella + somma (peso x quantita')
+# 2. L'ESITO                                             [OUT]
 # ============================================================
-w = PESO_PASSERELLA
-for nome, peso in PESI.items():
-    par = tray.LookupParameter(nome)
-    if par is None:
-        print("  {:>11}: PARAMETRO ASSENTE sul tratto".format(nome))
-        continue
-    n = par.AsInteger()
-    w += peso * n
-    print("  {:>11}: {:.2f} kg/m  x{}  ->  {:.2f} kg/m".format(
-        nome, peso, n, peso * n))
-
-# ============================================================
-# 3. IL RISULTATO                                        [OUT]
-# ============================================================
-print("Peso passerella: {:.2f} kg/m".format(PESO_PASSERELLA))
-print("Peso al metro w: {:.2f} kg/m".format(w))
+print("Lunghezza in pianta:  {:.2f} m".format(Lpl))
+print("Lunghezza 3D (reale): {:.2f} m".format(L3d))
+print("Salite e discese:     {:.2f} m".format(L3d - Lpl))

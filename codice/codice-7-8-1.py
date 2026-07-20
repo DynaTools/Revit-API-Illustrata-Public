@@ -1,34 +1,46 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.8.1  |  Capitolo 7.8 - L'aria, portata e ricambi
-# Sezione: Passi 1--2 - raccogliere il condotto
+# Codice 7.8.1  |  Capitolo 7.8 - Il percorso minimo nella rete
+# Sezione: Passo 3 - Dijkstra in Python
 
-from Autodesk.Revit.DB import (BuiltInParameter, UnitUtils, UnitTypeId)
-from Autodesk.Revit.UI.Selection import ObjectType
+import heapq
 
-uidoc = __revit__.ActiveUIDocument
-doc   = uidoc.Document
+# Dijkstra su un grafo pesato.
+# adj[u] = lista di (v, peso) per ogni arco u->v (qui non orientato).
+def dijkstra(adj, sorg, dest):
+    dist = dict((n, float("inf")) for n in adj)   # migliore distanza nota
+    prev = dict((n, None) for n in adj)            # predecessore nel cammino
+    dist[sorg] = 0.0
+    pq = [(0.0, sorg)]                             # coda di priorita'
+    while pq:
+        d, u = heapq.heappop(pq)                   # nodo aperto piu' vicino
+        if d > dist[u]:
+            continue                               # voce vecchia: scartala
+        if u == dest:
+            break                                  # ottimo per dest gia' certo
+        for v, w in adj[u]:                        # rilassa i vicini di u
+            nd = d + w                             # dist(u) + w(u,v)
+            if nd < dist[v]:                       # strada migliore per v?
+                dist[v] = nd
+                prev[v] = u
+                heapq.heappush(pq, (nd, v))
+    # ricostruzione del cammino da dest a ritroso fino a sorg
+    cammino, n = [], dest
+    while n is not None:
+        cammino.append(n)
+        n = prev[n]
+    cammino.reverse()
+    return dist[dest], cammino
 
-# PASSO 1: clicca il condotto nel modello
-ref      = uidoc.Selection.PickObject(ObjectType.Element,
-                                      "Seleziona il condotto")
-condotto = doc.GetElement(ref.ElementId)
+# la rete della figura (nodo: lista di (vicino, lunghezza in metri))
+adj = {
+    "A": [("C", 6.0), ("D", 4.0)],
+    "C": [("A", 6.0), ("B", 12.0), ("D", 5.0)],
+    "B": [("C", 12.0), ("E", 4.0)],
+    "D": [("A", 4.0), ("E", 7.0), ("C", 5.0)],
+    "E": [("D", 7.0), ("B", 4.0)],
+}
 
-# PASSO 2: leggi la sezione (rettangolare) e la portata
-p_larg = condotto.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM)
-p_alt  = condotto.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM)
-p_q    = condotto.get_Parameter(BuiltInParameter.RBS_DUCT_FLOW_PARAM)
-
-# dai piedi ai metri, dai piedi cubi/s ai m3/s (Legge II)
-larg = UnitUtils.ConvertFromInternalUnits(p_larg.AsDouble(), UnitTypeId.Meters)
-alt  = UnitUtils.ConvertFromInternalUnits(p_alt.AsDouble(),  UnitTypeId.Meters)
-Q    = UnitUtils.ConvertFromInternalUnits(p_q.AsDouble(),
-                                          UnitTypeId.CubicMetersPerSecond)
-
-A = larg * alt                       # area della sezione in m2
-
-print("Condotto DA-01")
-print("Sezione: {:.0f} x {:.0f} mm".format(larg * 1000, alt * 1000))
-print("Area della sezione: {:.3f} m2".format(A))
-print("Portata: {:.3f} m3/s  ({:.0f} L/s = {:.0f} m3/h)".format(
-    Q, Q * 1000, Q * 3600))
+lung, cammino = dijkstra(adj, "A", "B")
+print("Percorso minimo: {}".format(" -> ".join(cammino)))
+print("Lunghezza cavo: {:.1f} m".format(lung))

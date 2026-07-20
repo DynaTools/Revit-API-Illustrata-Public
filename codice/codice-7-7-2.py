@@ -1,28 +1,16 @@
 # -*- coding: utf-8 -*-
 # Revit API Illustrata in Python - Paulo Giavoni
-# Codice 7.7.2  |  Capitolo 7.7 - Lo spazio da difendere
-# Sezione: Passo 3 - chi interseca la zona
+# Codice 7.7.2  |  Capitolo 7.7 - La distanza minima fra due percorsi
+# Sezione: Passi 3--4 - confronto e verdetto
 
-from Autodesk.Revit.DB import (BoundingBoxIntersectsFilter,
-    ElementId)
-from System.Collections.Generic import List
+# PASSI 3-4: confronto col franco minimo e verdetto
+FRANCO = 0.20                      # franco minimo richiesto (m) -- da norma
+conforme = d >= FRANCO
 
-# PASSO 3: filtro spaziale AABB-AABB sulla zona
-filt = BoundingBoxIntersectsFilter(Outline(zmin, zmax))
-
-esclusi = List[ElementId]([quadro.Id])     # non l'intruso: e' il quadro stesso
-
-intrusi = (FilteredElementCollector(doc)
-           .WherePasses(filt)
-           .Excluding(esclusi)
-           .WhereElementIsNotElementType()
-           .ToElements())
-
-# scarto il muro retrostante: non e' un ostacolo "davanti"
-intrusi = [e for e in intrusi
-           if e.Category and e.Category.Id.IntegerValue
-              != int(BuiltInCategory.OST_Walls)]
-
-print("Elementi che invadono la zona: {}".format(len(intrusi)))
-for e in intrusi:
-    print("  - {} ({})".format(e.Category.Name, e.Name))
+print("Franco minimo richiesto: {:.2f} m".format(FRANCO))
+print("Distanza reale: {:.2f} m".format(d))
+print("---")
+if conforme:
+    print("ESITO: CONFORME (margine {:.2f} m)".format(d - FRANCO))
+else:
+    print("ESITO: NON CONFORME - i due percorsi sono troppo vicini")
