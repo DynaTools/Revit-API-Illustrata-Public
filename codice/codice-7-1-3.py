@@ -5,7 +5,7 @@
 
 # ============================================================
 # 0. RIPARTENZA                            [PY]+[REVIT]+[ENG]
-#    blocco autonomo: riclicca e risomma il percorso 3D
+#    blocco autonomo: riclicca e risomma il percorso
 # ============================================================
 from Autodesk.Revit.DB import LocationCurve
 from Autodesk.Revit.UI.Selection import ObjectType
@@ -16,16 +16,26 @@ doc   = uidoc.Document
 refs  = uidoc.Selection.PickObjects(ObjectType.Element,
                                     "Seleziona tutto il percorso, poi Finish")
 
+# somma: tratti dritti (curva) + raccordi (arco = raggio x angolo)
 L_ft = 0.0
 for r in refs:
-    loc = doc.GetElement(r.ElementId).Location
+    elem_id = r.ElementId
+    elem    = doc.GetElement(elem_id)
+    loc     = elem.Location
+
     if isinstance(loc, LocationCurve):
         L_ft += loc.Curve.Length
+    else:
+        p_raggio = elem.LookupParameter("Bend Radius")
+        p_angolo = elem.LookupParameter("Angle")
+        if p_raggio and p_angolo:
+            L_ft += p_raggio.AsDouble() * p_angolo.AsDouble()
+
 L_mod = L_ft * FT_M
 
 # ============================================================
 # 1. PASSO 4, SFRIDO E TOTALE                            [ENG]
-#    margine di posa: raccordi, terminazioni, scorta (%)
+#    margine di posa: terminazioni, scorta (%)
 # ============================================================
 sfrido_pct = 5.0
 L_sfrido   = L_mod * sfrido_pct / 100.0

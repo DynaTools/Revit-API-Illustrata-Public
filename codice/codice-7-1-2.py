@@ -19,18 +19,26 @@ refs  = uidoc.Selection.PickObjects(ObjectType.Element,
 
 # ============================================================
 # 1. PASSO 3, 3D CONTRO PIANTA                           [ENG]
-#    per ogni tratto: lunghezza 3D e ombra in pianta (solo xy)
+#    solo i tratti dritti: 3D reale e ombra in pianta (x,y)
 # ============================================================
 L3d_ft = 0.0
 Lpl_ft = 0.0
+
 for r in refs:
-    loc = doc.GetElement(r.ElementId).Location
+    elem_id = r.ElementId
+    elem    = doc.GetElement(elem_id)
+    loc     = elem.Location
+
     if isinstance(loc, LocationCurve):
-        c  = loc.Curve
-        p0 = c.GetEndPoint(0)
-        p1 = c.GetEndPoint(1)
-        L3d_ft += c.Length                                # 3D reale
-        Lpl_ft += math.hypot(p1.X - p0.X, p1.Y - p0.Y)    # proiezione in pianta
+        curva = loc.Curve
+        p0    = curva.GetEndPoint(0)      # punto iniziale
+        p1    = curva.GetEndPoint(1)      # punto finale
+
+        dx = p1.X - p0.X                  # differenza in x
+        dy = p1.Y - p0.Y                  # differenza in y
+
+        L3d_ft += curva.Length                   # 3D reale
+        Lpl_ft += math.sqrt(dx * dx + dy * dy)   # ombra in pianta
 
 L3d = L3d_ft * FT_M
 Lpl = Lpl_ft * FT_M
